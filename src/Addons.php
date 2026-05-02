@@ -3,17 +3,13 @@ declare (strict_types=1);
 
 namespace tsaotai\addons;
 
-use think\App;
-
 class Addons
 {
-    protected App $app;
     protected array $addons = [];
     protected Generator $generator;
 
-    public function __construct(App $app, Generator $generator)
+    public function __construct(Generator $generator)
     {
-        $this->app = $app;
         $this->generator = $generator;
     }
 

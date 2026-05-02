@@ -16,7 +16,7 @@ class Service extends ThinkService
 
         // 注册 Addons 服务
         $this->app->bind('addons', function () {
-            return new Addons($this->app, $this->app->make(Generator::class));
+            return new Addons($this->app->make(Generator::class));
         });
     }
 
