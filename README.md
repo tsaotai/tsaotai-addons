@@ -44,7 +44,7 @@ Router::register();
 
 ### 配置文件
 
-在 `config/addons.php` 中配置：
+在 `config/addons.php` 中配置，然后在 `app/provider.php` 或其他地方加载：
 
 ```php
 <?php
@@ -58,6 +58,18 @@ return [
     // 是否自动加载插件
     'auto_load' => true,
 ];
+```
+
+### 加载配置
+
+在 `app/provider.php` 或服务提供者中加载：
+
+```php
+<?php
+use tsaotai\addons\Config;
+
+$config = require config_path('addons.php');
+Config::load($config);
 ```
 
 ### 动态配置

@@ -9,9 +9,6 @@ class Service extends ThinkService
 {
     public function register()
     {
-        // 加载配置
-        $this->mergeConfigFrom(__DIR__ . '/config.php', 'addons');
-
         // 注册服务
         $this->app->bind('addons', function () {
             return new Addons($this->app);
