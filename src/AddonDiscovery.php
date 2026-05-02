@@ -19,7 +19,7 @@ class AddonDiscovery
             return $names;
         }
 
-        $dirs = glob($addonsPath . '*', GLOB_ONLYDIR);
+        $dirs = glob(rtrim($addonsPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
         if ($dirs !== false) {
             foreach ($dirs as $dir) {
                 $names[] = basename($dir);
@@ -83,7 +83,8 @@ class AddonDiscovery
     {
         $configPath = self::getConfigPath($name);
         if (is_file($configPath)) {
-            return include $configPath;
+            $config = include $configPath;
+            return is_array($config) ? $config : [];
         }
         return [];
     }

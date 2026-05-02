@@ -66,6 +66,7 @@ class Generator
 
     protected function createDirectoryStructure(string $path, array $options = []): void
     {
+        $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         $dirs = [
             $path,
             $path . 'controller',
