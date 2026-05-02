@@ -18,11 +18,11 @@ class Service extends ThinkService
     public function boot()
     {
         // 启动服务
-        $this->registerRoutes();
+        $this->loadRoutes();
         $this->loadAddons();
     }
 
-    protected function registerRoutes()
+    protected function loadRoutes()
     {
         // 自动注册插件路由
         Router::register();
