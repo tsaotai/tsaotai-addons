@@ -158,7 +158,29 @@ $pluginConfig = addons_path('demo/plugin.php');
 
 ## 快速创建插件
 
-使用内置的插件生成器快速创建插件：
+### 方式 1：命令行（推荐）
+
+```bash
+# 创建基本插件
+php think make:addon demo
+
+# 创建带完整信息的插件
+php think make:addon demo --title="示例插件" --description="这是一个示例插件" --author="Your Name" --version="1.0.0"
+
+# 创建包含可选目录的插件
+php think make:addon demo --with-model --with-validate --with-public
+```
+
+命令选项说明：
+- `--title` - 插件标题
+- `--description` - 插件描述
+- `--author` - 插件作者
+- `--version` - 插件版本
+- `--with-model` - 创建 model 目录
+- `--with-validate` - 创建 validate 目录
+- `--with-public` - 创建 public 目录
+
+### 方式 2：代码方式
 
 ```php
 <?php

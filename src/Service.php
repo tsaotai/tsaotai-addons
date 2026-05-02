@@ -4,6 +4,7 @@ declare (strict_types=1);
 namespace tsaotai\addons;
 
 use think\Service as ThinkService;
+use tsaotai\addons\command\MakeAddon;
 
 class Service extends ThinkService
 {
@@ -22,6 +23,11 @@ class Service extends ThinkService
 
     public function boot()
     {
+        // 注册命令
+        $this->commands([
+            MakeAddon::class,
+        ]);
+
         // 启动服务
         if (Config::get('auto_register', true)) {
             $this->loadRoutes();
