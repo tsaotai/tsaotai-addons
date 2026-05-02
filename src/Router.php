@@ -3,7 +3,7 @@ namespace tsaotai\addons;
 
 use think\facade\Route;
 
-class Route
+class Router
 {
     public static function register()
     {
