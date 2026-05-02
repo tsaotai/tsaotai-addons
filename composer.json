@@ -22,7 +22,10 @@
     "autoload": {
         "psr-4": {
             "tsaotai\\addons\\": "src/"
-        }
+        },
+        "files": [
+            "src/helper.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

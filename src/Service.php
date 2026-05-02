@@ -9,6 +9,9 @@ class Service extends ThinkService
 {
     public function register()
     {
+        // 加载配置
+        $this->mergeConfigFrom(__DIR__ . '/config.php', 'addons');
+
         // 注册服务
         $this->app->bind('addons', function () {
             return new Addons($this->app);
@@ -18,8 +21,13 @@ class Service extends ThinkService
     public function boot()
     {
         // 启动服务
-        $this->loadRoutes();
-        $this->loadAddons();
+        if (Config::get('auto_register', true)) {
+            $this->loadRoutes();
+        }
+
+        if (Config::get('auto_load', true)) {
+            $this->loadAddons();
+        }
     }
 
     protected function loadRoutes()

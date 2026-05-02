@@ -38,7 +38,50 @@ use tsaotai\addons\Router;
 Router::register();
 ```
 
-### 使用 Facade（更简洁）
+---
+
+## 配置
+
+### 配置文件
+
+在 `config/addons.php` 中配置：
+
+```php
+<?php
+return [
+    // 插件路径
+    'path' => root_path('addons'),
+
+    // 是否自动注册路由
+    'auto_register' => true,
+
+    // 是否自动加载插件
+    'auto_load' => true,
+];
+```
+
+### 动态配置
+
+```php
+<?php
+use tsaotai\addons\Config;
+
+// 获取配置
+$path = Config::get('path');
+
+// 设置配置
+Config::set('auto_register', false);
+
+// 批量设置
+Config::set([
+    'auto_register' => true,
+    'auto_load' => true,
+]);
+```
+
+---
+
+## 使用 Facade（更简洁）
 
 ```php
 <?php
@@ -49,6 +92,40 @@ $addons = Addons::getAddons();
 
 // 扫描插件目录
 $addons = Addons::scanAddons();
+```
+
+---
+
+## 使用助手函数
+
+包提供了便捷的助手函数：
+
+### addons()
+
+```php
+<?php
+// 获取插件管理器
+$addons = addons();
+
+// 获取单个插件信息
+$demo = addons('demo');
+```
+
+### addons_url()
+
+```php
+<?php
+// 生成插件 URL
+$url = addons_url('demo/index');
+// 相当于 url('addons/demo/index')
+```
+
+### addons_view()
+
+```php
+<?php
+// 渲染插件视图
+return addons_view('demo/index/index', $vars);
 ```
 
 ---
@@ -185,6 +262,7 @@ class Plugin extends PluginController
 | `tsaotai\addons\Loader` | 插件加载器 |
 | `tsaotai\addons\Router` | 插件路由注册器 |
 | `tsaotai\addons\Addons` | 插件管理器 |
+| `tsaotai\addons\Config` | 配置管理类 |
 | `tsaotai\addons\Service` | ThinkPHP 服务提供者 |
 
 ### Facade API
@@ -195,6 +273,14 @@ class Plugin extends PluginController
 | `Addons::registerRoutes()` | 注册插件路由 |
 | `Addons::getAddons()` | 获取所有插件信息 |
 | `Addons::scanAddons()` | 扫描插件目录 |
+
+### Config API
+
+| 方法 | 说明 |
+| --- | --- |
+| `Config::get($name, $default)` | 获取配置 |
+| `Config::set($name, $value)` | 设置配置 |
+| `Config::load($config)` | 加载配置 |
 
 ---
 
@@ -216,6 +302,12 @@ class Plugin extends PluginController
 ---
 
 ## 升级指南
+
+### 从 1.1.x 升级到 1.2.x
+
+1. 无需修改现有插件代码
+2. 可以使用新的配置功能
+3. 可以使用新的助手函数
 
 ### 从 1.0.x 升级到 1.1.x
 
