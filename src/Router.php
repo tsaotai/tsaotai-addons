@@ -8,7 +8,7 @@ class Router
     public static function register()
     {
         // 插件目录
-        $addonDir = root_path('addons');
+        $addonDir = addons_path();
         if (!is_dir($addonDir)) {
             return;
         }
@@ -16,9 +16,9 @@ class Router
         // 遍历所有插件，自动注册 Plugin 路由 + 加载自定义路由
         foreach (scandir($addonDir) as $dirName) {
             if (in_array($dirName, ['.', '..'])) continue;
-            if (!is_dir($addonDir . DIRECTORY_SEPARATOR . $dirName)) continue;
+            if (!is_dir(addons_path($dirName))) continue;
 
-            $pluginDir  = $addonDir . DIRECTORY_SEPARATOR . $dirName;
+            $pluginDir  = addons_path($dirName);
             $configFile = $pluginDir . DIRECTORY_SEPARATOR . 'plugin.php';
 
             // 必须存在配置文件

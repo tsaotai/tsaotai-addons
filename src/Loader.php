@@ -16,13 +16,13 @@ class Loader
     public static function load()
     {
         // 插件根目录
-        $addonPath = root_path('addons');
+        $addonPath = addons_path();
 
         if (is_dir($addonPath)) {
             // 遍历所有插件
             foreach (scandir($addonPath) as $plugin) {
                 if ($plugin === '.' || $plugin === '..') continue;
-                $pluginDir = $addonPath . DIRECTORY_SEPARATOR . $plugin . DIRECTORY_SEPARATOR;
+                $pluginDir = addons_path($plugin) . DIRECTORY_SEPARATOR;
                 if (!is_dir($pluginDir)) continue;
 
                 // ====================== 配置加载：直接读取插件根目录 config.php ======================

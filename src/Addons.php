@@ -7,12 +7,14 @@ use think\App;
 
 class Addons
 {
-    protected $app;
-    protected $addons = [];
+    protected App $app;
+    protected array $addons = [];
+    protected Generator $generator;
 
-    public function __construct(App $app)
+    public function __construct(App $app, Generator $generator)
     {
         $this->app = $app;
+        $this->generator = $generator;
     }
 
     public function load(): void
@@ -35,23 +37,30 @@ class Addons
 
     public function scanAddons(): array
     {
-        $addonsPath = $this->app->rootPath('addons');
+        $addonsPath = addons_path();
         $addons = [];
 
         if (is_dir($addonsPath)) {
             $dirs = glob($addonsPath . '*', GLOB_ONLYDIR);
-            foreach ($dirs as $dir) {
-                $name = basename($dir);
-                $addons[$name] = $this->getAddonInfo($name);
+            if ($dirs !== false) {
+                foreach ($dirs as $dir) {
+                    $name = basename($dir);
+                    $addons[$name] = $this->getAddonInfo($name);
+                }
             }
         }
 
         return $addons;
     }
 
+    public function create(string $name, array $options = []): bool
+    {
+        return $this->generator->create($name, $options);
+    }
+
     protected function getAddonInfo(string $name): array
     {
-        $addonPath = $this->app->rootPath('addons/' . $name);
+        $addonPath = addons_path($name);
         $configFile = $addonPath . '/plugin.php';
 
         $info = [

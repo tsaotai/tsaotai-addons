@@ -12,6 +12,7 @@ use think\Facade;
  * @method static void registerRoutes()
  * @method static array getAddons()
  * @method static array scanAddons()
+ * @method static bool create(string $name, array $options = [])
  */
 class Addons extends Facade
 {

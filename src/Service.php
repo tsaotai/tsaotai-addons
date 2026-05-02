@@ -9,9 +9,14 @@ class Service extends ThinkService
 {
     public function register()
     {
-        // 注册服务
+        // 注册 Generator 服务
+        $this->app->bind(Generator::class, function () {
+            return new Generator($this->app);
+        });
+
+        // 注册 Addons 服务
         $this->app->bind('addons', function () {
-            return new Addons($this->app);
+            return new Addons($this->app, $this->app->make(Generator::class));
         });
     }
 
