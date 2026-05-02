@@ -16,14 +16,24 @@
         "php": ">=8.0.0",
         "topthink/framework": "^8.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    },
     "autoload": {
         "psr-4": {
             "tsaotai\\addons\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "tsaotai\\addons\\tests\\": "tests/"
+        }
+    },
     "extra": {
         "think": {
-            "services": []
+            "services": [
+                "tsaotai\\addons\\Service"
+            ]
         }
     },
     "minimum-stability": "dev",

@@ -10,25 +10,52 @@ composer require tsaotai/tsaotai-addons
 
 ## 快速开始
 
-### 1. 配置插件加载器
+### 方式 A：自动加载（推荐）
+
+安装后，包会通过 ThinkPHP 服务提供者自动加载插件和路由，无需额外配置！
+
+### 方式 B：手动配置
+
+如果需要手动配置：
+
+#### 1. 配置插件加载器
 
 在 `app/addons.php`：
 ```php
 <?php
-tsaotai\addons\Loader::load();
+use tsaotai\addons\Loader;
+
+Loader::load();
 ```
 
-### 2. 配置插件路由
+#### 2. 配置插件路由
 
 在 `route/addons.php`：
 ```php
 <?php
-tsaotai\addons\Router::register();
+use tsaotai\addons\Router;
+
+Router::register();
 ```
 
-### 3. 创建你的第一个插件
+### 使用 Facade（更简洁）
 
-#### 目录结构
+```php
+<?php
+use tsaotai\addons\facade\Addons;
+
+// 获取所有插件信息
+$addons = Addons::getAddons();
+
+// 扫描插件目录
+$addons = Addons::scanAddons();
+```
+
+---
+
+## 创建你的第一个插件
+
+### 目录结构
 ```
 addons/
 └── demo/                    # 插件目录（唯一标识）
@@ -42,7 +69,7 @@ addons/
     └── route.php            # 插件路由（可选）
 ```
 
-#### 插件配置 `plugin.php`
+### 插件配置 `plugin.php`
 ```php
 <?php
 return [
@@ -70,7 +97,7 @@ return [
 ];
 ```
 
-#### 前台控制器 `controller/Index.php`
+### 前台控制器 `controller/Index.php`
 ```php
 <?php
 declare (strict_types=1);
@@ -94,7 +121,7 @@ class Index extends BaseController
 }
 ```
 
-#### 插件管理控制器 `controller/Plugin.php`
+### 插件管理控制器 `controller/Plugin.php`
 ```php
 <?php
 declare (strict_types=1);
@@ -123,7 +150,7 @@ class Plugin extends PluginController
 }
 ```
 
-#### 视图文件 `view/index/index.html`
+### 视图文件 `view/index/index.html`
 ```html
 <!DOCTYPE html>
 <html>
@@ -137,12 +164,18 @@ class Plugin extends PluginController
 </html>
 ```
 
-### 4. 访问插件
+---
+
+## 访问插件
 
 - 前台页面：`http://your-domain/addons/demo`
 - 插件管理：`http://your-domain/plugin/demo`
 
-## 类说明
+---
+
+## API 文档
+
+### 类说明
 
 | 类名 | 说明 |
 | --- | --- |
@@ -151,6 +184,19 @@ class Plugin extends PluginController
 | `tsaotai\addons\PluginController` | 插件管理控制器 |
 | `tsaotai\addons\Loader` | 插件加载器 |
 | `tsaotai\addons\Router` | 插件路由注册器 |
+| `tsaotai\addons\Addons` | 插件管理器 |
+| `tsaotai\addons\Service` | ThinkPHP 服务提供者 |
+
+### Facade API
+
+| 方法 | 说明 |
+| --- | --- |
+| `Addons::load()` | 加载插件 |
+| `Addons::registerRoutes()` | 注册插件路由 |
+| `Addons::getAddons()` | 获取所有插件信息 |
+| `Addons::scanAddons()` | 扫描插件目录 |
+
+---
 
 ## 插件开发规范
 
@@ -166,6 +212,18 @@ class Plugin extends PluginController
 - `plugin.php` - 插件配置（必填）
 - `route.php` - 插件路由（可选）
 - `common.php` - 公共函数（可选）
+
+---
+
+## 升级指南
+
+### 从 1.0.x 升级到 1.1.x
+
+1. 无需修改现有插件代码
+2. 建议删除 `app/addons.php` 和 `route/addons.php` 中的手动配置，使用自动加载
+3. 可以使用新的 Facade 来简化代码
+
+---
 
 ## 许可证
 
