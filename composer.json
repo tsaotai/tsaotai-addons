@@ -3,10 +3,13 @@
     "description": "TsaoTai plugin system for ThinkPHP 8",
     "type": "library",
     "license": "Apache-2.0",
+    "keywords": ["thinkphp", "plugin", "addons", "tsaotai"],
+    "homepage": "https://github.com/tsaotai/tsaotai-addons",
     "authors": [
         {
-            "name": "教员",
-            "email": "your@email.com"
+            "name": "TsaoTai",
+            "email": "n@jimao.xin",
+            "homepage": "https://github.com/tsaotai"
         }
     ],
     "require": {
@@ -22,5 +25,7 @@
         "think": {
             "services": []
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
