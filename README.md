@@ -165,7 +165,7 @@ $pluginConfig = addons_path('demo/plugin.php');
 php think make:addon demo
 
 # 创建带完整信息的插件
-php think make:addon demo --title="示例插件" --description="这是一个示例插件" --author="Your Name" --version="1.0.0"
+php think make:addon demo --title="示例插件" --description="这是一个示例插件" --author="Your Name" --plugin-version="1.0.0"
 
 # 创建包含可选目录的插件
 php think make:addon demo --with-model --with-validate --with-public
@@ -175,7 +175,7 @@ php think make:addon demo --with-model --with-validate --with-public
 - `--title` - 插件标题
 - `--description` - 插件描述
 - `--author` - 插件作者
-- `--version` - 插件版本
+- `--plugin-version` - 插件版本
 - `--with-model` - 创建 model 目录
 - `--with-validate` - 创建 validate 目录
 - `--with-public` - 创建 public 目录

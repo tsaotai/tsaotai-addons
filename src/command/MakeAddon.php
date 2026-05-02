@@ -20,7 +20,7 @@ class MakeAddon extends Command
             ->addOption('title', null, Option::VALUE_OPTIONAL, 'Addon title')
             ->addOption('description', null, Option::VALUE_OPTIONAL, 'Addon description')
             ->addOption('author', null, Option::VALUE_OPTIONAL, 'Addon author')
-            ->addOption('version', null, Option::VALUE_OPTIONAL, 'Addon version')
+            ->addOption('plugin-version', null, Option::VALUE_OPTIONAL, 'Addon version')
             ->addOption('with-model', null, Option::VALUE_NONE, 'Create model directory')
             ->addOption('with-validate', null, Option::VALUE_NONE, 'Create validate directory')
             ->addOption('with-public', null, Option::VALUE_NONE, 'Create public directory');
@@ -46,7 +46,7 @@ class MakeAddon extends Command
         if ($author = $input->getOption('author')) {
             $options['author'] = $author;
         }
-        if ($version = $input->getOption('version')) {
+        if ($version = $input->getOption('plugin-version')) {
             $options['version'] = $version;
         }
         
