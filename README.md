@@ -316,6 +316,7 @@ class Plugin extends PluginController
 | `tsaotai\addons\Router` | 插件路由注册器 |
 | `tsaotai\addons\Addons` | 插件管理器 |
 | `tsaotai\addons\Generator` | 插件生成器 |
+| `tsaotai\addons\AddonDiscovery` | 插件发现服务（统一插件目录扫描） |
 | `tsaotai\addons\Config` | 配置管理类 |
 | `tsaotai\addons\Service` | ThinkPHP 服务提供者 |
 

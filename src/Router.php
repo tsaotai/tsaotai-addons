@@ -7,24 +7,15 @@ class Router
 {
     public static function register()
     {
-        // 插件目录
-        $addonDir = addons_path();
-        if (!is_dir($addonDir)) {
-            return;
-        }
+        $addonNames = AddonDiscovery::getAddonNames();
 
-        // 遍历所有插件，自动注册 Plugin 路由 + 加载自定义路由
-        foreach (scandir($addonDir) as $dirName) {
-            if (in_array($dirName, ['.', '..'])) continue;
-            if (!is_dir(addons_path($dirName))) continue;
-
-            $pluginDir  = addons_path($dirName);
-            $configFile = $pluginDir . DIRECTORY_SEPARATOR . 'plugin.php';
+        foreach ($addonNames as $dirName) {
+            $pluginDir = AddonDiscovery::getAddonPath($dirName);
 
             // 必须存在配置文件
-            if (!is_file($configFile)) continue;
+            if (!AddonDiscovery::hasConfig($dirName)) continue;
 
-            $config     = include $configFile;
+            $config = AddonDiscovery::getConfig($dirName);
             $identifier = $config['identifier'] ?? '';
             if (empty($identifier)) continue;
 

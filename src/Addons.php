@@ -37,17 +37,11 @@ class Addons
 
     public function scanAddons(): array
     {
-        $addonsPath = addons_path();
         $addons = [];
+        $names = AddonDiscovery::getAddonNames();
 
-        if (is_dir($addonsPath)) {
-            $dirs = glob($addonsPath . '*', GLOB_ONLYDIR);
-            if ($dirs !== false) {
-                foreach ($dirs as $dir) {
-                    $name = basename($dir);
-                    $addons[$name] = $this->getAddonInfo($name);
-                }
-            }
+        foreach ($names as $name) {
+            $addons[$name] = $this->getAddonInfo($name);
         }
 
         return $addons;
@@ -60,9 +54,6 @@ class Addons
 
     protected function getAddonInfo(string $name): array
     {
-        $addonPath = addons_path($name);
-        $configFile = $addonPath . '/plugin.php';
-
         $info = [
             'name' => $name,
             'title' => $name,
@@ -70,11 +61,11 @@ class Addons
             'version' => '1.0.0',
             'author' => '',
             'state' => 'enable',
-            'installed' => file_exists($addonPath . '/install.lock'),
+            'installed' => AddonDiscovery::isInstalled($name),
         ];
 
-        if (file_exists($configFile)) {
-            $config = include $configFile;
+        if (AddonDiscovery::hasConfig($name)) {
+            $config = AddonDiscovery::getConfig($name);
             $info = array_merge($info, $config);
         }
 
