@@ -140,6 +140,47 @@ $url = addons_url('demo/index');
 return addons_view('demo/index/index', $vars);
 ```
 
+### addons_path()
+
+```php
+<?php
+// 获取插件根目录
+$path = addons_path();
+
+// 获取指定插件目录
+$demoPath = addons_path('demo');
+
+// 获取插件下的文件
+$pluginConfig = addons_path('demo/plugin.php');
+```
+
+---
+
+## 快速创建插件
+
+使用内置的插件生成器快速创建插件：
+
+```php
+<?php
+use tsaotai\addons\facade\Addons;
+
+// 快速创建一个插件
+Addons::create('demo', [
+    'title' => '示例插件',
+    'description' => '这是一个示例插件',
+    'author' => 'Your Name',
+    'version' => '1.0.0',
+]);
+
+// 创建包含可选目录的插件
+Addons::create('demo', [
+    'title' => '示例插件',
+    'with_model' => true,      // 生成 model 目录
+    'with_validate' => true,   // 生成 validate 目录
+    'with_public' => true,     // 生成 public 目录
+]);
+```
+
 ---
 
 ## 创建你的第一个插件
@@ -274,6 +315,7 @@ class Plugin extends PluginController
 | `tsaotai\addons\Loader` | 插件加载器 |
 | `tsaotai\addons\Router` | 插件路由注册器 |
 | `tsaotai\addons\Addons` | 插件管理器 |
+| `tsaotai\addons\Generator` | 插件生成器 |
 | `tsaotai\addons\Config` | 配置管理类 |
 | `tsaotai\addons\Service` | ThinkPHP 服务提供者 |
 
@@ -285,6 +327,7 @@ class Plugin extends PluginController
 | `Addons::registerRoutes()` | 注册插件路由 |
 | `Addons::getAddons()` | 获取所有插件信息 |
 | `Addons::scanAddons()` | 扫描插件目录 |
+| `Addons::create($name, $options)` | 创建新插件 |
 
 ### Config API
 
