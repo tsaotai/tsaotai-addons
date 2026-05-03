@@ -40,6 +40,7 @@ class Generator
             $this->createPluginConfig($pluginPath, $name, $options);
             $this->createMainController($pluginPath, $name);
             $this->createPluginController($pluginPath, $name);
+            $this->createRouteFile($pluginPath, $name);
             $this->createViewFiles($pluginPath, $name);
             $this->createReadme($pluginPath, $name, $options);
             $this->createGitignore($pluginPath);
@@ -261,6 +262,19 @@ PHP;
         $this->writeFile($path . 'controller' . DIRECTORY_SEPARATOR . 'Plugin.php', $content);
     }
 
+    protected function createRouteFile(string $path, string $name): void
+    {
+        $content = <<<PHP
+<?php
+use think\\facade\\Route;
+
+// {$name} 插件自定义路由（可在此添加 {$name} 插件所需的额外路由）
+// 插件标准 Plugin 路由已由 route/addons.php 统一自动注册，无需在此重复定义
+PHP;
+
+        $this->writeFile($path . 'route.php', $content);
+    }
+
     protected function createViewFiles(string $path, string $name): void
     {
         // 主视图
@@ -371,6 +385,7 @@ HTML;
             $dirStructure .= "├── public/          # 公共资源\n";
         }
         
+        $dirStructure .= "├── route.php        # 插件路由\n";
         $dirStructure .= "├── plugin.php       # 插件配置\n";
         $dirStructure .= "└── README.md        # 说明文档\n";
         
@@ -449,7 +464,7 @@ MD;
         $updateContent = <<<MD
 # 更新日志
 
-## v1.0.0 ({$date})
+## 1.0.0 ({$date})
 
 - 初始版本发布
 - 基本功能实现

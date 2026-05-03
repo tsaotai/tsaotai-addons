@@ -56,7 +56,7 @@ class MakeAddon extends Command
         $options['with_public'] = $input->getOption('with-public');
 
         try {
-            $generator = new Generator(app());
+            $generator = app(Generator::class);
             $generator->create($name, $options);
             
             $output->writeln('<info>插件创建成功！</info>');
