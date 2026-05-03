@@ -36,7 +36,7 @@ class Generator
         }
 
         try {
-            $this->createDirectoryStructure($pluginPath, $options);
+            $this->createDirectoryStructure($pluginPath, $name, $options);
             $this->createPluginConfig($pluginPath, $name, $options);
             $this->createMainController($pluginPath, $name);
             $this->createPluginController($pluginPath, $name);
@@ -64,7 +64,7 @@ class Generator
         $this->createdPaths = [];
     }
 
-    protected function createDirectoryStructure(string $path, array $options = []): void
+    protected function createDirectoryStructure(string $path, string $name, array $options = []): void
     {
         $path = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         $dirs = [
