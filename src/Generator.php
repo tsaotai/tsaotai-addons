@@ -38,9 +38,9 @@ class Generator
         try {
             $this->createDirectoryStructure($pluginPath, $options);
             $this->createPluginConfig($pluginPath, $name, $options);
-            $this->createIndexController($pluginPath, $name);
+            $this->createMainController($pluginPath, $name);
             $this->createPluginController($pluginPath, $name);
-            $this->createViewFile($pluginPath, $name);
+            $this->createViewFiles($pluginPath, $name);
             $this->createReadme($pluginPath, $name, $options);
             $this->createGitignore($pluginPath);
             $this->createDataFiles($pluginPath);
@@ -71,7 +71,7 @@ class Generator
             $path,
             $path . 'controller',
             $path . 'view',
-            $path . 'view' . DIRECTORY_SEPARATOR . 'index',
+            $path . 'view' . DIRECTORY_SEPARATOR . $name,
             $path . 'view' . DIRECTORY_SEPARATOR . 'plugin',
             $path . 'data',
             $path . 'data' . DIRECTORY_SEPARATOR . 'plugin',
@@ -108,36 +108,117 @@ class Generator
 
     protected function createPluginConfig(string $path, string $name, array $options): void
     {
-        $config = [
-            'identifier'    => $name,
-            'title'         => $options['title'] ?? ucfirst($name) . ' 插件',
-            'description'   => $options['description'] ?? '这是一个自动生成的插件',
-            'version'       => $options['version'] ?? '1.0.0',
-            'author'        => $options['author'] ?? '',
-            'create'        => date('Y-m-d'),
-            'update'        => date('Y-m-d'),
-            'icon'          => $options['icon'] ?? 'puzzle',
-            'category'      => $options['category'] ?? 'tool',
-            'sort'          => 0,
-            'state'         => 'enable',
-            'config'        => false,
-            'install'       => true,
-            'clean'         => false,
-            'rely'          => '',
-            'entry'         => 'addons/' . $name,
-            'scope'         => $options['scope'] ?? 'admin',
-            'classify'      => $options['classify'] ?? 'free',
-            'domain'        => '',
-            'license'       => 'Apache-2.0',
-            'remark'        => ''
-        ];
+        $title = $options['title'] ?? ucfirst($name) . ' 插件';
+        $description = $options['description'] ?? '这是一个自动生成的插件';
+        $author = $options['author'] ?? '教员';
+        $version = $options['plugin_version'] ?? '1.0.0';
+        $icon = $options['icon'] ?? 'tools';
+        $category = $options['category'] ?? 'tool';
+        $scope = $options['scope'] ?? 'admin';
+        $classify = $options['classify'] ?? 'free';
+        $date = date('Y-m-d');
+        
+        $content = <<<PHP
+<?php
+/**
+ * 插件统一配置文件
+ * 命名规范：纯独立英文原单词、无缩写、无拼接、无下划线
+ * 编写规范：字段用途、取值范围、约束规则全部注释标注
+ */
+return [
+    // 【核心唯一标识】
+    // 约束：必须与插件目录文件夹名称完全一致，小写字母，不可重复、不可修改
+    'identifier' => '{$name}',
 
-        $content = "<?php\nreturn " . var_export($config, true) . ";\n";
+    // 【插件展示名称】
+    // 约束：后台列表、插件页头部正式显示名称，支持中文
+    'title' => '{$title}',
+
+    // 【插件完整描述】
+    // 约束：详细说明插件作用、能力、使用场景，禁止过短，便于后期查阅
+    'description' => '{$description}',
+
+    // 【当前版本号】
+    // 约束：语义化版本格式 主版本.次版本.修订号，例：1.0.0
+    'version' => '{$version}',
+
+    // 【开发作者】
+    // 约束：填写开发负责人/团队名称，用于版权与溯源
+    'author' => '{$author}',
+
+    // 【创建时间】
+    // 约束：固定格式 YYYY-MM-DD，版本迭代同步更新
+    'create' => '{$date}',
+
+    // 【最后更新日期】
+    // 约束：固定格式 YYYY-MM-DD，版本迭代同步更新
+    'update' => '{$date}',
+
+    // 【图标标识】
+    // 约束：BootstrapIcons 纯图标名，只写单体单词/短横线名，不带 bi- 前缀
+    // 常用参考：puzzle、tools、gear、box、shield、database、terminal
+    'icon' => '{$icon}',
+
+    // 【功能分类】
+    // 约束：固定取值 tool=工具类 / function=功能类 / business=业务类
+    'category' => '{$category}',
+
+    // 【排序权重】
+    // 约束：纯数字，数值越大，后台插件列表展示越靠前
+    'sort' => 0,
+
+    // 【运行状态】
+    // 约束：固定取值 enable=默认启用 / disable=默认禁用
+    'state' => 'enable',
+
+    // 【独立配置页】
+    // 约束：布尔值 true=存在单独配置页面 / false=无额外配置
+    'config' => false,
+
+    // 【安装流程】
+    // 约束：布尔值 true=需要执行安装逻辑（建表/初始化数据） / false=直接启用
+    'install' => true,
+
+    // 【卸载清理】
+    // 约束：布尔值 true=卸载同步删除业务数据 / false=保留数据，防止误删丢失
+    'clean' => false,
+
+    // 【依赖插件】
+    // 约束：多个依赖逗号分隔，无依赖留空；填写目标插件 identifier 标识
+    'rely' => '',
+
+    // 【后台访问入口】
+    // 约束：插件独立管理页面路由地址，用于菜单点击跳转
+    'entry' => 'addons/{$name}',
+
+    // 【适用范围】
+    // 约束：admin=仅后台使用 / index=仅前台使用 / all=全模块通用
+    'scope' => '{$scope}',
+
+    // 【插件品类】
+    // 约束：free=免费版 / basic=基础版 / pro=专业付费版
+    'classify' => '{$classify}',
+
+    // 【文档地址】
+    // 约束：填写文档/知识库链接，无文档留空
+    'domain' => '',
+
+    // 【开源协议】
+    // 约束：标注版权协议，内部项目可自定义填写内部专用
+    'licence' => 'Apache-2.0',
+
+    // 【补充备注】
+    // 约束：填写使用注意事项、特殊说明、限制条件，运营/维护查看
+    'remark' => '标准模板插件，安装即可正常使用，卸载默认保留数据，避免误操作丢失内容。'
+];
+PHP;
+
         $this->writeFile($path . 'plugin.php', $content);
     }
 
-    protected function createIndexController(string $path, string $name): void
+    protected function createMainController(string $path, string $name): void
     {
+        $className = ucfirst($name);
         $namespace = 'addons\\' . $name . '\\controller';
         $content = <<<PHP
 <?php
@@ -145,23 +226,19 @@ declare (strict_types=1);
 
 namespace {$namespace};
 
-use tsaotai\\addons\\BaseController;
+use tsaotai\\addons\\CommonController;
 
-class Index extends BaseController
+class {$className} extends CommonController
 {
+    // 插件首页
     public function index()
     {
-        \$this->assign('name', '{$name}');
         return \$this->fetch();
-    }
-    
-    public function hello(\$name = 'World')
-    {
-        return json(['code' => 1, 'msg' => 'Hello ' . \$name]);
     }
 }
 PHP;
-        $this->writeFile($path . 'controller' . DIRECTORY_SEPARATOR . 'Index.php', $content);
+
+        $this->writeFile($path . 'controller' . DIRECTORY_SEPARATOR . $className . '.php', $content);
     }
 
     protected function createPluginController(string $path, string $name): void
@@ -180,11 +257,13 @@ class Plugin extends PluginController
     
 }
 PHP;
+
         $this->writeFile($path . 'controller' . DIRECTORY_SEPARATOR . 'Plugin.php', $content);
     }
 
-    protected function createViewFile(string $path, string $name): void
+    protected function createViewFiles(string $path, string $name): void
     {
+        // 主视图
         $content = <<<HTML
 <!DOCTYPE html>
 <html>
@@ -192,43 +271,77 @@ PHP;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{$name}</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            padding: 2rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .container {
-            background: white;
-            padding: 3rem;
-            border-radius: 1rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            text-align: center;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 1rem;
-        }
-        p {
-            color: #666;
-            font-size: 1.1rem;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Hello, {\$name}!</h1>
+        <h1>Hello, {$name}!</h1>
         <p>欢迎使用 TsaoTai 插件系统！</p>
     </div>
 </body>
 </html>
 HTML;
-        $this->writeFile($path . 'view' . DIRECTORY_SEPARATOR . 'index' . DIRECTORY_SEPARATOR . 'index.html', $content);
+
+        $this->writeFile($path . 'view' . DIRECTORY_SEPARATOR . $name . DIRECTORY_SEPARATOR . 'index.html', $content);
+
+        // 插件管理视图 - index
+        $pluginIndexContent = <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>插件管理</title>
+</head>
+<body>
+    <div class="container">
+        <h1>插件管理</h1>
+        <p>在这里管理 {$name} 插件</p>
+    </div>
+</body>
+</html>
+HTML;
+
+        $this->writeFile($path . 'view' . DIRECTORY_SEPARATOR . 'plugin' . DIRECTORY_SEPARATOR . 'index.html', $pluginIndexContent);
+
+        // 插件管理视图 - rule
+        $ruleContent = <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>规则说明</title>
+</head>
+<body>
+    <div class="container">
+        <h1>规则说明</h1>
+        <p>在这里查看 {$name} 插件的使用规则</p>
+    </div>
+</body>
+</html>
+HTML;
+
+        $this->writeFile($path . 'view' . DIRECTORY_SEPARATOR . 'plugin' . DIRECTORY_SEPARATOR . 'rule.html', $ruleContent);
+
+        // 插件管理视图 - update
+        $updateContent = <<<HTML
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>更新说明</title>
+</head>
+<body>
+    <div class="container">
+        <h1>更新说明</h1>
+        <p>在这里查看 {$name} 插件的更新日志</p>
+    </div>
+</body>
+</html>
+HTML;
+
+        $this->writeFile($path . 'view' . DIRECTORY_SEPARATOR . 'plugin' . DIRECTORY_SEPARATOR . 'update.html', $updateContent);
     }
 
     protected function createReadme(string $path, string $name, array $options): void
@@ -238,7 +351,7 @@ HTML;
         
         $dirStructure = "{$name}/\n";
         $dirStructure .= "├── controller/       # 控制器\n";
-        $dirStructure .= "│   ├── Index.php    # 前台控制器\n";
+        $dirStructure .= "│   ├── " . ucfirst($name) . ".php    # 主控制器\n";
         $dirStructure .= "│   └── Plugin.php   # 插件管理控制器\n";
         
         if (!empty($options['with_model'])) {
@@ -250,6 +363,8 @@ HTML;
         }
         
         $dirStructure .= "├── view/            # 视图\n";
+        $dirStructure .= "│   ├── {$name}/      # 插件视图\n";
+        $dirStructure .= "│   └── plugin/     # 管理视图\n";
         $dirStructure .= "├── data/            # 数据文件\n";
         
         if (!empty($options['with_public'])) {
@@ -283,6 +398,7 @@ HTML;
 
 Apache-2.0
 MD;
+
         $this->writeFile($path . 'README.md', $content);
     }
 
@@ -314,12 +430,22 @@ logs/
 .DS_Store
 Thumbs.db
 GITIGNORE;
+
         $this->writeFile($path . '.gitignore', $content);
     }
 
     protected function createDataFiles(string $path): void
     {
         $date = date('Y-m-d');
+        
+        $readmeContent = <<<MD
+# 插件数据
+
+存放插件数据文件。
+MD;
+
+        $this->writeFile($path . 'data' . DIRECTORY_SEPARATOR . 'plugin' . DIRECTORY_SEPARATOR . 'readme.md', $readmeContent);
+
         $updateContent = <<<MD
 # 更新日志
 
@@ -328,6 +454,7 @@ GITIGNORE;
 - 初始版本发布
 - 基本功能实现
 MD;
+
         $this->writeFile($path . 'data' . DIRECTORY_SEPARATOR . 'plugin' . DIRECTORY_SEPARATOR . 'update.md', $updateContent);
 
         $ruleContent = <<<MD
@@ -335,6 +462,7 @@ MD;
 
 本插件遵循 TsaoTai 插件开发规范。
 MD;
+
         $this->writeFile($path . 'data' . DIRECTORY_SEPARATOR . 'plugin' . DIRECTORY_SEPARATOR . 'rule.md', $ruleContent);
     }
 }
