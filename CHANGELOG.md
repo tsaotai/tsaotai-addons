@@ -4,6 +4,18 @@
 
 ---
 
+## [1.7.7] - 2026-05-03
+
+### ✨ 最终优化版本
+
+- 完整的插件系统功能
+- 统一的 CHANGELOG 格式（无 v 前缀）
+- 插件生成器包含 route.php
+- 完善的文档和示例
+- 所有版本优化的整合
+
+---
+
 ## [1.7.6] - 2026-05-03
 
 ### ✨ 优化完善
@@ -12,6 +24,8 @@
 - 修复生成的 update.md 版本号格式（移除v前缀）
 - 优化 MakeAddon 命令使用容器获取 Generator
 - 更新 README 目录结构，包含 route.php
+
+---
 
 ## [1.7.5] - 2026-05-03
 
@@ -41,8 +55,8 @@
 
 ### 🐛 修复 createDirectoryStructure() 方法缺少 $name 参数的 bug
 
-- 在 `createDirectoryStructure()` 方法签名中添加 `$name` 参数
-- 更新 `create()` 方法中的调用，传入 `$name`
+- 在 `createDirectoryStructure()` 方法签名中添加 $name 参数
+- 更新 `create()` 方法中的调用，传入 $name
 
 ---
 
@@ -189,5 +203,4 @@
 - PluginController - 插件管理控制器
 - Loader - 插件加载器
 - Router - 插件路由注册器
-- 完整的插件系统架构
-
+- 完整

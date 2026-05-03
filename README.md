@@ -202,6 +202,7 @@ addons/
     │       ├── readme.md
     │       ├── rule.md
     │       └── update.md
+    ├── route.php            # 插件自定义路由（可选）
     ├── plugin.php           # 插件配置（必填）
     ├── README.md            # 插件说明
     └── .gitignore           # Git 忽略文件
