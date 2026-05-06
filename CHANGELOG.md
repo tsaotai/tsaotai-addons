@@ -8,7 +8,7 @@
 
 ### 🚀 重大更新
 
-- 删除 CommonController 类，简化继承体系
+- **保留 CommonController 类** - 作为向后兼容的空壳，继承自 BaseController
 - PluginController 现在直接继承 BaseController
 - 所有文件统一使用 `declare (strict_types=1);`
 - Loader 和 Router 类添加返回类型声明
