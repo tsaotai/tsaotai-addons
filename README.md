@@ -132,7 +132,7 @@ php think make:addon demo
 **创建带完整信息的插件：**
 
 ```bash
-php think addon:make demo --title="示例插件" --description="这是一个示例插件" --author="教员" --plugin-version="1.0.0"
+php think addon:make demo --title="示例插件" --description="这是一个示例插件" --author="教员" --plugin-version="2026.1.1"
 ```
 
 **创建包含可选目录的插件：**
@@ -164,7 +164,7 @@ Addons::create('demo', [
     'title' => '示例插件',
     'description' => '这是一个示例插件',
     'author' => '教员',
-    'version' => '1.0.0',
+    'version' => '2026.1.1',
 ]);
 
 // 创建包含可选目录的插件
@@ -233,7 +233,7 @@ return [
     'description' => '这是一个示例插件',
     
     // 【当前版本号】语义化版本
-    'version' => '1.0.0',
+    'version' => '2026.1.1',
     
     // 【开发作者】
     'author' => '教员',
@@ -288,7 +288,7 @@ return [
 
 ### 3. 开发主控制器
 
-主控制器继承 `CommonController`（自动带登录验证）：
+主控制器继承 `BaseController`：
 
 ```php
 <?php
@@ -296,9 +296,9 @@ declare (strict_types=1);
 
 namespace addons\demo\controller;
 
-use tsaotai\addons\CommonController;
+use tsaotai\addons\BaseController;
 
-class Demo extends CommonController
+class Demo extends BaseController
 {
     // 插件首页
     public function index()
@@ -462,7 +462,6 @@ Addons::create('demo', ['title' => '示例插件']);
 | 类名 | 说明 |
 | --- | --- |
 | `tsaotai\addons\BaseController` | 插件基础控制器 |
-| `tsaotai\addons\CommonController` | 插件基础控制器（带登录验证） |
 | `tsaotai\addons\PluginController` | 插件管理控制器 |
 | `tsaotai\addons\Loader` | 插件加载器 |
 | `tsaotai\addons\Router` | 插件路由注册器 |
@@ -515,6 +514,12 @@ Addons::create('demo', ['title' => '示例插件']);
 ---
 
 ## 升级指南
+
+### 从 1.7.x 升级到 2026.1.1
+
+1. **重要**：将插件中继承 `CommonController` 的类改为继承 `BaseController`
+2. 其他功能保持兼容，无需修改其他代码
+3. 版本号格式更新为 2026.1.1
 
 ### 从 1.5.x 升级到 1.6.x
 

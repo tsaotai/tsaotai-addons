@@ -54,7 +54,7 @@ class Addons
             'name' => $name,
             'title' => $name,
             'description' => '',
-            'version' => '1.0.0',
+            'version' => '2026.1.1',
             'author' => '',
             'state' => 'enable',
             'installed' => AddonDiscovery::isInstalled($name),

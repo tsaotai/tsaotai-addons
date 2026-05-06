@@ -5,13 +5,16 @@ namespace tsaotai\addons;
 
 class Config
 {
-    protected static $config = [
+    /**
+     * @var array<string, mixed>
+     */
+    protected static array $config = [
         'path' => '',
         'auto_register' => true,
         'auto_load' => true,
     ];
 
-    public static function get($name = null, $default = null)
+    public static function get(?string $name = null, mixed $default = null): mixed
     {
         if ($name === null) {
             return self::$config;
@@ -20,7 +23,7 @@ class Config
         return self::$config[$name] ?? $default;
     }
 
-    public static function set($name, $value = null): void
+    public static function set(string|array $name, mixed $value = null): void
     {
         if (is_array($name)) {
             self::$config = array_merge(self::$config, $name);

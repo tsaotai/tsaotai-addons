@@ -10,7 +10,7 @@ namespace tsaotai\addons;
  * - 安装/卸载逻辑
  * - update/rule markdown 渲染
  */
-abstract class PluginController extends CommonController
+abstract class PluginController extends BaseController
 {
     protected string $addonName;
     protected array $addonInfo;
@@ -26,10 +26,10 @@ abstract class PluginController extends CommonController
         $this->pluginDir = dirname(dirname($ref->getFileName()));
         $this->addonName = basename($this->pluginDir);
 
-        $configFile = $this->pluginDir . '/plugin.php';
+        $configFile = $this->pluginDir . DIRECTORY_SEPARATOR . 'plugin.php';
         $this->addonInfo = is_file($configFile) ? include $configFile : [
             'title'       => '未知插件',
-            'version'     => '1.0.0',
+            'version'     => '2026.1.1',
             'author'      => '未知作者',
             'update'      => date('Y-m-d'),
             'description' => '暂无插件描述',
@@ -37,7 +37,7 @@ abstract class PluginController extends CommonController
             'identifier'  => $this->addonName
         ];
 
-        $this->lockFile = $this->pluginDir . '/install.lock';
+        $this->lockFile = $this->pluginDir . DIRECTORY_SEPARATOR . 'install.lock';
     }
 
     protected function getMarkdownContent(string $file): string
@@ -65,7 +65,7 @@ abstract class PluginController extends CommonController
     public function update(): string
     {
         $baseUrl    = "/plugin/{$this->addonName}";
-        $updateFile = $this->pluginDir . '/data/plugin/update.md';
+        $updateFile = $this->pluginDir . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugin' . DIRECTORY_SEPARATOR . 'update.md';
         $this->assign([
             'addon'      => $this->addonInfo,
             'index_url'  => $baseUrl,
@@ -80,7 +80,7 @@ abstract class PluginController extends CommonController
     public function rule(): string
     {
         $baseUrl  = "/plugin/{$this->addonName}";
-        $ruleFile = $this->pluginDir . '/data/plugin/rule.md';
+        $ruleFile = $this->pluginDir . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'plugin' . DIRECTORY_SEPARATOR . 'rule.md';
         $this->assign([
             'addon'      => $this->addonInfo,
             'index_url'  => $baseUrl,

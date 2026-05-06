@@ -1,8 +1,6 @@
 <?php
-// 全局公共函数
-/**
- * ThinkPHP 8 标准插件加载器（适配：插件根目录 config.php）
- */
+declare (strict_types=1);
+
 namespace tsaotai\addons;
 
 use think\facade\Config;
@@ -13,11 +11,16 @@ use think\facade\Request;
 
 class Loader
 {
-    public static function load()
+    public static function load(): void
     {
         $addonNames = AddonDiscovery::getAddonNames();
 
         foreach ($addonNames as $plugin) {
+            // 检查插件是否启用
+            if (!self::isPluginEnabled($plugin)) {
+                continue;
+            }
+
             $pluginDir = AddonDiscovery::getAddonPath($plugin) . DIRECTORY_SEPARATOR;
 
             // ====================== 配置加载：直接读取插件根目录 config.php ======================
@@ -42,5 +45,16 @@ class Loader
                 })->namespace("addons\\{$plugin}\\controller");
             }
         }
+    }
+
+    protected static function isPluginEnabled(string $pluginName): bool
+    {
+        // 如果有 plugin.php 配置文件，检查 state 字段
+        if (AddonDiscovery::hasConfig($pluginName)) {
+            $config = AddonDiscovery::getConfig($pluginName);
+            return ($config['state'] ?? 'enable') === 'enable';
+        }
+        // 没有配置文件，默认启用
+        return true;
     }
 }

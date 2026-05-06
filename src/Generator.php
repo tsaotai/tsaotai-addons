@@ -112,7 +112,7 @@ class Generator
         $title = $options['title'] ?? ucfirst($name) . ' 插件';
         $description = $options['description'] ?? '这是一个自动生成的插件';
         $author = $options['author'] ?? '教员';
-        $version = $options['plugin_version'] ?? '1.0.0';
+        $version = $options['plugin_version'] ?? '2026.1.1';
         $icon = $options['icon'] ?? 'tools';
         $category = $options['category'] ?? 'tool';
         $scope = $options['scope'] ?? 'admin';
@@ -227,9 +227,9 @@ declare (strict_types=1);
 
 namespace {$namespace};
 
-use tsaotai\\addons\\CommonController;
+use tsaotai\\addons\\BaseController;
 
-class {$className} extends CommonController
+class {$className} extends BaseController
 {
     // 插件首页
     public function index()
@@ -464,7 +464,7 @@ MD;
         $updateContent = <<<MD
 # 更新日志
 
-## 1.0.0 ({$date})
+## 2026.1.1 ({$date})
 
 - 初始版本发布
 - 基本功能实现

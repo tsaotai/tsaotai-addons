@@ -1,21 +1,25 @@
 <?php
+declare (strict_types=1);
+
 namespace tsaotai\addons;
 
 use think\facade\Route;
 
 class Router
 {
-    public static function register()
+    public static function register(): void
     {
         $addonNames = AddonDiscovery::getAddonNames();
 
         foreach ($addonNames as $dirName) {
-            $pluginDir = AddonDiscovery::getAddonPath($dirName);
-
             // 必须存在配置文件
             if (!AddonDiscovery::hasConfig($dirName)) continue;
 
             $config = AddonDiscovery::getConfig($dirName);
+            
+            // 检查插件是否启用
+            if (($config['state'] ?? 'enable') !== 'enable') continue;
+
             $identifier = $config['identifier'] ?? '';
             if (empty($identifier)) continue;
 
@@ -28,6 +32,7 @@ class Router
             Route::any("plugin/{$identifier}",           "{$controller}@index");
 
             // 加载插件自定义路由（如有）
+            $pluginDir = AddonDiscovery::getAddonPath($dirName);
             $routeFile = $pluginDir . DIRECTORY_SEPARATOR . 'route.php';
             if (is_file($routeFile)) {
                 require $routeFile;

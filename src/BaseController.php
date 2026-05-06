@@ -79,18 +79,15 @@ abstract class BaseController
     /**
      * 自动绑定插件视图路径
      */
-    protected function initAddonView()
+    protected function initAddonView(): void
     {
-        if ($this->addon) {
-            $viewPath = $this->app->getRootPath() . "addons/{$this->addon}/view/";
-            View::config(['view_path' => $viewPath]);
-        }
+        // 不使用全局 View::config，避免多插件冲突
     }
 
     /**
      * 验证数据
      */
-    protected function validate(array $data, string|array $validate, array $message = [], bool $batch = false)
+    protected function validate(array $data, string|array $validate, array $message = [], bool $batch = false): bool
     {
         if (is_array($validate)) {
             $v = new Validate();
@@ -118,7 +115,7 @@ abstract class BaseController
     /**
      * 模板赋值
      */
-    protected function assign($name, $value = null): static
+    protected function assign(string|array $name, mixed $value = null): static
     {
         if (is_array($name)) {
             $this->vars = array_merge($this->vars, $name);
@@ -126,6 +123,14 @@ abstract class BaseController
             $this->vars[$name] = $value;
         }
         return $this;
+    }
+
+    /**
+     * 获取插件视图路径
+     */
+    protected function getAddonViewPath(): string
+    {
+        return $this->app->getRootPath() . "addons/{$this->addon}/view/";
     }
 
     /**
@@ -143,7 +148,8 @@ abstract class BaseController
             $template = $controller . '/' . $this->request->action();
         }
 
-        // 原生渲染
-        return View::assign($this->vars)->fetch($template);
+        // 原生渲染，直接传入视图路径配置，避免多插件冲突
+        $viewPath = $this->getAddonViewPath();
+        return View::assign($this->vars)->fetch($template, [], ['view_path' => $viewPath]);
     }
 }

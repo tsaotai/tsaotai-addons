@@ -59,7 +59,7 @@ class AddonDiscovery
      */
     public static function getConfigPath(string $name): string
     {
-        return self::getAddonPath($name) . '/plugin.php';
+        return self::getAddonPath($name) . DIRECTORY_SEPARATOR . 'plugin.php';
     }
 
     /**
@@ -97,6 +97,6 @@ class AddonDiscovery
      */
     public static function isInstalled(string $name): bool
     {
-        return is_file(self::getAddonPath($name) . '/install.lock');
+        return is_file(self::getAddonPath($name) . DIRECTORY_SEPARATOR . 'install.lock');
     }
 }
