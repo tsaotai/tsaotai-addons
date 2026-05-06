@@ -71,7 +71,7 @@ abstract class BaseController
     /**
      * 初始化
      */
-    protected function initialize(): void
+    protected function initialize()
     {
 
     }
