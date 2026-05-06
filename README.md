@@ -14,6 +14,7 @@ TsaoTai plugin system for ThinkPHP 8.
 - [配置](#配置)
 - [快速创建插件](#快速创建插件)
 - [开发插件指南](#开发插件指南)
+- [AI 开发指南](#ai-开发指南)
 - [API 文档](#api-文档)
 - [升级指南](#升级指南)
 
@@ -455,13 +456,27 @@ Addons::create('demo', ['title' => '示例插件']);
 
 ---
 
+## AI 开发指南
+
+使用 AI（如 Claude、GPT 等）辅助开发插件，请查看 [AI-DEVELOPMENT-GUIDE.md](./AI-DEVELOPMENT-GUIDE.md)。
+
+包含内容：
+- 给 AI 的完整项目上下文
+- 插件结构说明
+- 常用开发模式
+- 可复制的提示词模板
+- 完整示例（待办事项插件）
+
+---
+
 ## API 文档
 
 ### 类说明
 
 | 类名 | 说明 |
 | --- | --- |
-| `tsaotai\addons\BaseController` | 插件基础控制器 |
+| `tsaotai\addons\BaseController` | 插件基础控制器（推荐新插件使用） |
+| `tsaotai\addons\CommonController` | 旧版本基础控制器（保留，向后兼容） |
 | `tsaotai\addons\PluginController` | 插件管理控制器 |
 | `tsaotai\addons\Loader` | 插件加载器 |
 | `tsaotai\addons\Router` | 插件路由注册器 |
@@ -517,8 +532,10 @@ Addons::create('demo', ['title' => '示例插件']);
 
 ### 从 1.7.x 升级到 2026.1.1
 
-1. **重要**：将插件中继承 `CommonController` 的类改为继承 `BaseController`
-2. 其他功能保持兼容，无需修改其他代码
+1. **完全兼容，无需修改现有插件代码** ✅
+   - `CommonController` 已保留作为向后兼容
+   - 旧插件可以继续使用
+2. **新插件建议**：直接继承 `BaseController`
 3. 版本号格式更新为 2026.1.1
 
 ### 从 1.5.x 升级到 1.6.x
