@@ -18,13 +18,13 @@ abstract class BaseController
      * Request实例
      * @var \think\Request
      */
-    protected \think\Request $request;
+    protected $request;
 
     /**
      * 应用实例
      * @var \think\App
      */
-    protected App $app;
+    protected $app;
 
     /**
      * 是否批量验证
@@ -79,16 +79,18 @@ abstract class BaseController
     /**
      * 自动绑定插件视图路径
      */
-    protected function initAddonView(): void
+    protected function initAddonView()
     {
-        $viewPath = $this->getAddonViewPath();
-        View::config(['view_path' => $viewPath]);
+        if ($this->addon) {
+            $viewPath = $this->app->getRootPath() . "addons/{$this->addon}/view/";
+            View::config(['view_path' => $viewPath]);
+        }
     }
 
     /**
      * 验证数据
      */
-    protected function validate(array $data, string|array $validate, array $message = [], bool $batch = false): bool
+    protected function validate(array $data, string|array $validate, array $message = [], bool $batch = false)
     {
         if (is_array($validate)) {
             $v = new Validate();
@@ -116,7 +118,7 @@ abstract class BaseController
     /**
      * 模板赋值
      */
-    protected function assign(string|array $name, mixed $value = null): static
+    protected function assign($name, $value = null): static
     {
         if (is_array($name)) {
             $this->vars = array_merge($this->vars, $name);
@@ -124,14 +126,6 @@ abstract class BaseController
             $this->vars[$name] = $value;
         }
         return $this;
-    }
-
-    /**
-     * 获取插件视图路径
-     */
-    protected function getAddonViewPath(): string
-    {
-        return $this->app->getRootPath() . "addons/{$this->addon}/view/";
     }
 
     /**
@@ -149,6 +143,7 @@ abstract class BaseController
             $template = $controller . '/' . $this->request->action();
         }
 
+        // 原生渲染
         return View::assign($this->vars)->fetch($template);
     }
 }
