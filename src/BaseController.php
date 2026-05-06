@@ -81,7 +81,8 @@ abstract class BaseController
      */
     protected function initAddonView(): void
     {
-        // 不使用全局 View::config，避免多插件冲突
+        $viewPath = $this->getAddonViewPath();
+        View::config(['view_path' => $viewPath]);
     }
 
     /**
@@ -148,10 +149,6 @@ abstract class BaseController
             $template = $controller . '/' . $this->request->action();
         }
 
-        // 直接使用完整文件路径渲染，避免全局配置冲突
-        $viewPath = $this->getAddonViewPath();
-        $fullTemplate = $viewPath . $template;
-        
-        return View::assign($this->vars)->fetch($fullTemplate);
+        return View::assign($this->vars)->fetch($template);
     }
 }

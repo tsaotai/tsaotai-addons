@@ -10,6 +10,7 @@
 
 - **保留 CommonController 类** - 作为向后兼容的空壳，继承自 BaseController
 - **BaseController::initialize() 移除返回类型** - 保持与旧插件的兼容性
+- **修复 BaseController 视图渲染** - 恢复使用 View::config() 方式，确保旧插件正常工作
 - PluginController 现在直接继承 BaseController
 - 所有文件统一使用 `declare (strict_types=1);`
 - Loader 和 Router 类添加返回类型声明
