@@ -23,6 +23,7 @@
 - 添加插件状态检查，只加载启用的插件
 - 统一使用自定义 Config 类管理配置
 - 添加 loadConfig() 方法自动读取配置
+- **Loader 简化** - 移除多余的 isPluginEnabled() 方法，直接内联逻辑
 
 ### 🐛 Bug 修复
 

@@ -16,9 +16,13 @@ class Loader
         $addonNames = AddonDiscovery::getAddonNames();
 
         foreach ($addonNames as $plugin) {
-            // 检查插件是否启用
-            if (!self::isPluginEnabled($plugin)) {
-                continue;
+            // 获取插件配置和状态
+            $config = null;
+            if (AddonDiscovery::hasConfig($plugin)) {
+                $config = AddonDiscovery::getConfig($plugin);
+                if (($config['state'] ?? 'enable') !== 'enable') {
+                    continue;
+                }
             }
 
             $pluginDir = AddonDiscovery::getAddonPath($plugin) . DIRECTORY_SEPARATOR;
@@ -45,16 +49,5 @@ class Loader
                 })->namespace("addons\\{$plugin}\\controller");
             }
         }
-    }
-
-    protected static function isPluginEnabled(string $pluginName): bool
-    {
-        // 如果有 plugin.php 配置文件，检查 state 字段
-        if (AddonDiscovery::hasConfig($pluginName)) {
-            $config = AddonDiscovery::getConfig($pluginName);
-            return ($config['state'] ?? 'enable') === 'enable';
-        }
-        // 没有配置文件，默认启用
-        return true;
     }
 }
