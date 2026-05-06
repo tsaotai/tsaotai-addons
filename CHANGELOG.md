@@ -26,7 +26,7 @@
 
 ### 🐛 Bug 修复
 
-- 修复 BaseController 中 View::config 全局修改导致的多插件冲突问题，改为在 fetch 时直接传入视图路径
+- 修复 BaseController 中 View::config 全局修改导致的多插件冲突问题，改为使用完整文件路径渲染视图
 - 修复 AddonDiscovery 中路径分隔符问题，统一使用 DIRECTORY_SEPARATOR
 - 修复 PluginController 中路径分隔符问题，确保跨平台兼容性
 - 完善 BaseController 中 validate 和 assign 方法的类型声明
@@ -35,6 +35,7 @@
 - 完善 Generator 生成的控制器 index() 方法返回类型
 - 完善 MakeAddon 命令 configure() 方法返回类型
 - 完善 BaseController 的 initialize() 方法返回类型
+- 完善 BaseController 的 $request 和 $app 属性类型声明
 
 ---
 

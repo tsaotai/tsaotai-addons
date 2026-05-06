@@ -18,13 +18,13 @@ abstract class BaseController
      * Request实例
      * @var \think\Request
      */
-    protected $request;
+    protected \think\Request $request;
 
     /**
      * 应用实例
      * @var \think\App
      */
-    protected $app;
+    protected App $app;
 
     /**
      * 是否批量验证
@@ -148,8 +148,10 @@ abstract class BaseController
             $template = $controller . '/' . $this->request->action();
         }
 
-        // 原生渲染，直接传入视图路径配置，避免多插件冲突
+        // 直接使用完整文件路径渲染，避免全局配置冲突
         $viewPath = $this->getAddonViewPath();
-        return View::assign($this->vars)->fetch($template, [], ['view_path' => $viewPath]);
+        $fullTemplate = $viewPath . $template;
+        
+        return View::assign($this->vars)->fetch($fullTemplate);
     }
 }
