@@ -8,7 +8,7 @@ use tsaotai\addons\command\MakeAddon;
 
 class Service extends ThinkService
 {
-    public function register()
+    public function register(): void
     {
         // 加载配置
         $this->loadConfig();
@@ -24,7 +24,7 @@ class Service extends ThinkService
         });
     }
 
-    public function boot()
+    public function boot(): void
     {
         // 注册命令
         $this->commands([

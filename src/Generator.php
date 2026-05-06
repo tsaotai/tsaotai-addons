@@ -232,7 +232,7 @@ use tsaotai\\addons\\BaseController;
 class {$className} extends BaseController
 {
     // 插件首页
-    public function index()
+    public function index(): string
     {
         return \$this->fetch();
     }

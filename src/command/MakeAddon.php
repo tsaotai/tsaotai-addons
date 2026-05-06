@@ -12,7 +12,7 @@ use tsaotai\addons\Generator;
 
 class MakeAddon extends Command
 {
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('make:addon')
             ->setAliases(['addon:make', 'plugin:make'])

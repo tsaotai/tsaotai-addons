@@ -30,6 +30,11 @@
 - 修复 AddonDiscovery 中路径分隔符问题，统一使用 DIRECTORY_SEPARATOR
 - 修复 PluginController 中路径分隔符问题，确保跨平台兼容性
 - 完善 BaseController 中 validate 和 assign 方法的类型声明
+- 完善 helper.php 中的类型声明
+- 完善 Service.php 的 register() 和 boot() 方法返回类型
+- 完善 Generator 生成的控制器 index() 方法返回类型
+- 完善 MakeAddon 命令 configure() 方法返回类型
+- 完善 BaseController 的 initialize() 方法返回类型
 
 ---
 

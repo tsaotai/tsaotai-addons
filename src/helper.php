@@ -1,6 +1,8 @@
 <?php
+declare (strict_types=1);
+
 if (!function_exists('addons')) {
-    function addons(string $name = null)
+    function addons(string $name = null): mixed
     {
         if ($name === null) {
             return app('addons');
