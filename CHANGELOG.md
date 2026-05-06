@@ -9,36 +9,19 @@
 ### 🚀 重大更新
 
 - **保留 CommonController 类** - 作为向后兼容的空壳，继承自 BaseController
+- **BaseController 完全恢复 1.7.7 状态** - 确保旧插件 100% 兼容
 - **BaseController::initialize() 移除返回类型** - 保持与旧插件的兼容性
-- **修复 BaseController 视图渲染** - 恢复使用 View::config() 方式，确保旧插件正常工作
 - PluginController 现在直接继承 BaseController
 - 所有文件统一使用 `declare (strict_types=1);`
 - Loader 和 Router 类添加返回类型声明
 - Service.php 修复 Config 类导入问题
 - 版本号统一使用 2026.1.1
 - 更新 Generator，生成的控制器继承 BaseController
-
-### ✨ 功能优化
-
-- 完善 Config 类的类型声明
-- 优化 Service 类，自动加载配置
-- 添加插件状态检查，只加载启用的插件
-- 统一使用自定义 Config 类管理配置
-- 添加 loadConfig() 方法自动读取配置
 - **Loader 简化** - 移除多余的 isPluginEnabled() 方法，直接内联逻辑
 
-### 🐛 Bug 修复
+### 📚 文档
 
-- 修复 BaseController 中 View::config 全局修改导致的多插件冲突问题，改为使用完整文件路径渲染视图
-- 修复 AddonDiscovery 中路径分隔符问题，统一使用 DIRECTORY_SEPARATOR
-- 修复 PluginController 中路径分隔符问题，确保跨平台兼容性
-- 完善 BaseController 中 validate 和 assign 方法的类型声明
-- 完善 helper.php 中的类型声明
-- 完善 Service.php 的 register() 和 boot() 方法返回类型
-- 完善 Generator 生成的控制器 index() 方法返回类型
-- 完善 MakeAddon 命令 configure() 方法返回类型
-- 完善 BaseController 的 initialize() 方法返回类型
-- 完善 BaseController 的 $request 和 $app 属性类型声明
+- 新增 AI-DEVELOPMENT-GUIDE.md - AI 辅助开发插件指南
 
 ---
 
