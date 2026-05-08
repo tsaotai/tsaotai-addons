@@ -38,9 +38,11 @@ class Generator
         try {
             $this->createDirectoryStructure($pluginPath, $name, $options);
             $this->createPluginConfig($pluginPath, $name, $options);
+            $this->createBaseController($pluginPath, $name, $options);
             $this->createMainController($pluginPath, $name);
             $this->createPluginController($pluginPath, $name);
             $this->createRouteFile($pluginPath, $name);
+            $this->createOptionalFiles($pluginPath, $name, $options);
             $this->createViewFiles($pluginPath, $name);
             $this->createReadme($pluginPath, $name, $options);
             $this->createGitignore($pluginPath);
@@ -217,6 +219,26 @@ PHP;
         $this->writeFile($path . 'plugin.php', $content);
     }
 
+    protected function createBaseController(string $path, string $name, array $options): void
+    {
+        if (!empty($options['with_base']) || empty($options['with_base'])) {
+            $namespace = 'addons\\' . $name . '\\controller';
+            $content = <<<PHP
+<?php
+declare (strict_types=1);
+
+namespace {$namespace};
+
+use addons\\common\\AuthBase;
+
+class Base extends AuthBase
+{
+}
+PHP;
+            $this->writeFile($path . 'controller' . DIRECTORY_SEPARATOR . 'Base.php', $content);
+        }
+    }
+
     protected function createMainController(string $path, string $name): void
     {
         $className = ucfirst($name);
@@ -227,11 +249,8 @@ declare (strict_types=1);
 
 namespace {$namespace};
 
-use tsaotai\\addons\\BaseController;
-
-class {$className} extends BaseController
+class {$className} extends Base
 {
-    // 插件首页
     public function index(): string
     {
         return \$this->fetch();
@@ -275,84 +294,171 @@ PHP;
         $this->writeFile($path . 'route.php', $content);
     }
 
+    protected function createOptionalFiles(string $path, string $name, array $options): void
+    {
+        if (!empty($options['with_config'])) {
+            $this->createConfigFile($path, $name);
+        }
+        
+        if (!empty($options['with_common'])) {
+            $this->createCommonFile($path, $name);
+        }
+        
+        if (!empty($options['with_service'])) {
+            $this->createServiceFile($path, $name);
+        }
+        
+        if (!empty($options['with_provider'])) {
+            $this->createProviderFile($path, $name);
+        }
+        
+        if (!empty($options['with_event'])) {
+            $this->createEventFile($path, $name);
+        }
+        
+        if (!empty($options['with_middleware'])) {
+            $this->createMiddlewareFile($path, $name);
+        }
+    }
+
+    protected function createConfigFile(string $path, string $name): void
+    {
+        $content = <<<PHP
+<?php
+return [
+    'default' => [],
+];
+PHP;
+        $this->writeFile($path . 'config.php', $content);
+    }
+
+    protected function createCommonFile(string $path, string $name): void
+    {
+        $content = <<<PHP
+<?php
+// {$name} 插件公共函数
+PHP;
+        $this->writeFile($path . 'common.php', $content);
+    }
+
+    protected function createServiceFile(string $path, string $name): void
+    {
+        $content = <<<PHP
+<?php
+// {$name} 插件服务定义
+PHP;
+        $this->writeFile($path . 'service.php', $content);
+    }
+
+    protected function createProviderFile(string $path, string $name): void
+    {
+        $content = <<<PHP
+<?php
+return [
+];
+PHP;
+        $this->writeFile($path . 'provider.php', $content);
+    }
+
+    protected function createEventFile(string $path, string $name): void
+    {
+        $content = <<<PHP
+<?php
+return [
+];
+PHP;
+        $this->writeFile($path . 'event.php', $content);
+    }
+
+    protected function createMiddlewareFile(string $path, string $name): void
+    {
+        $content = <<<PHP
+<?php
+return [
+];
+PHP;
+        $this->writeFile($path . 'middleware.php', $content);
+    }
+
     protected function createViewFiles(string $path, string $name): void
     {
         // 主视图
         $content = <<<HTML
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{$name}</title>
-</head>
-<body>
-    <div class="container">
-        <h1>Hello, {$name}!</h1>
-        <p>欢迎使用 TsaoTai 插件系统！</p>
+{extend name="admin@public/base"}
+
+{block name="content"}
+<div class="card">
+    <div class="card-header">
+        <h5>{$plugin.title}</h5>
     </div>
-</body>
-</html>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <div class="jumbotron">
+                    <h1 class="display-4">欢迎使用 {$name} 插件</h1>
+                    <p class="lead">这是一个由 TsaoTai 插件系统自动生成的插件。</p>
+                    <hr class="my-4">
+                    <p>您可以在此基础上开发您的插件功能。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}
 HTML;
 
         $this->writeFile($path . 'view' . DIRECTORY_SEPARATOR . $name . DIRECTORY_SEPARATOR . 'index.html', $content);
 
         // 插件管理视图 - index
         $pluginIndexContent = <<<HTML
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>插件管理</title>
-</head>
-<body>
-    <div class="container">
-        <h1>插件管理</h1>
+{extend name="admin@public/base"}
+
+{block name="content"}
+<div class="card">
+    <div class="card-header">
+        <h5>插件管理</h5>
+    </div>
+    <div class="card-body">
         <p>在这里管理 {$name} 插件</p>
     </div>
-</body>
-</html>
+</div>
+{/block}
 HTML;
 
         $this->writeFile($path . 'view' . DIRECTORY_SEPARATOR . 'plugin' . DIRECTORY_SEPARATOR . 'index.html', $pluginIndexContent);
 
         // 插件管理视图 - rule
         $ruleContent = <<<HTML
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>规则说明</title>
-</head>
-<body>
-    <div class="container">
-        <h1>规则说明</h1>
+{extend name="admin@public/base"}
+
+{block name="content"}
+<div class="card">
+    <div class="card-header">
+        <h5>规则说明</h5>
+    </div>
+    <div class="card-body">
         <p>在这里查看 {$name} 插件的使用规则</p>
     </div>
-</body>
-</html>
+</div>
+{/block}
 HTML;
 
         $this->writeFile($path . 'view' . DIRECTORY_SEPARATOR . 'plugin' . DIRECTORY_SEPARATOR . 'rule.html', $ruleContent);
 
         // 插件管理视图 - update
         $updateContent = <<<HTML
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>更新说明</title>
-</head>
-<body>
-    <div class="container">
-        <h1>更新说明</h1>
+{extend name="admin@public/base"}
+
+{block name="content"}
+<div class="card">
+    <div class="card-header">
+        <h5>更新说明</h5>
+    </div>
+    <div class="card-body">
         <p>在这里查看 {$name} 插件的更新日志</p>
     </div>
-</body>
-</html>
+</div>
+{/block}
 HTML;
 
         $this->writeFile($path . 'view' . DIRECTORY_SEPARATOR . 'plugin' . DIRECTORY_SEPARATOR . 'update.html', $updateContent);
@@ -365,6 +471,7 @@ HTML;
         
         $dirStructure = "{$name}/\n";
         $dirStructure .= "├── controller/       # 控制器\n";
+        $dirStructure .= "│   ├── Base.php     # 基础控制器（继承 AuthBase）\n";
         $dirStructure .= "│   ├── " . ucfirst($name) . ".php    # 主控制器\n";
         $dirStructure .= "│   └── Plugin.php   # 插件管理控制器\n";
         
@@ -380,13 +487,43 @@ HTML;
         $dirStructure .= "│   ├── {$name}/      # 插件视图\n";
         $dirStructure .= "│   └── plugin/     # 管理视图\n";
         $dirStructure .= "├── data/            # 数据文件\n";
+        $dirStructure .= "│   └── plugin/     # 插件数据（update.md、rule.md）\n";
         
         if (!empty($options['with_public'])) {
             $dirStructure .= "├── public/          # 公共资源\n";
+            $dirStructure .= "│   ├── css/         # 样式文件\n";
+            $dirStructure .= "│   ├── js/          # 脚本文件\n";
+            $dirStructure .= "│   └── images/      # 图片资源\n";
         }
         
         $dirStructure .= "├── route.php        # 插件路由\n";
         $dirStructure .= "├── plugin.php       # 插件配置\n";
+        
+        if (!empty($options['with_config'])) {
+            $dirStructure .= "├── config.php       # 配置文件\n";
+        }
+        
+        if (!empty($options['with_common'])) {
+            $dirStructure .= "├── common.php       # 公共函数\n";
+        }
+        
+        if (!empty($options['with_service'])) {
+            $dirStructure .= "├── service.php      # 服务定义\n";
+        }
+        
+        if (!empty($options['with_provider'])) {
+            $dirStructure .= "├── provider.php     # 服务提供者\n";
+        }
+        
+        if (!empty($options['with_event'])) {
+            $dirStructure .= "├── event.php        # 事件配置\n";
+        }
+        
+        if (!empty($options['with_middleware'])) {
+            $dirStructure .= "├── middleware.php   # 中间件配置\n";
+        }
+        
+        $dirStructure .= "├── .gitignore       # Git 忽略配置\n";
         $dirStructure .= "└── README.md        # 说明文档\n";
         
         $content = <<<MD

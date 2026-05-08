@@ -24,7 +24,14 @@ class MakeAddon extends Command
             ->addOption('plugin-version', null, Option::VALUE_OPTIONAL, '插件版本')
             ->addOption('with-model', null, Option::VALUE_NONE, '创建模型目录')
             ->addOption('with-validate', null, Option::VALUE_NONE, '创建验证器目录')
-            ->addOption('with-public', null, Option::VALUE_NONE, '创建公共资源目录');
+            ->addOption('with-public', null, Option::VALUE_NONE, '创建公共资源目录')
+            ->addOption('with-base', null, Option::VALUE_NONE, '创建插件基础控制器（默认启用）')
+            ->addOption('with-config', null, Option::VALUE_NONE, '创建插件配置文件')
+            ->addOption('with-common', null, Option::VALUE_NONE, '创建公共函数文件')
+            ->addOption('with-service', null, Option::VALUE_NONE, '创建服务文件')
+            ->addOption('with-provider', null, Option::VALUE_NONE, '创建服务提供者')
+            ->addOption('with-event', null, Option::VALUE_NONE, '创建事件配置')
+            ->addOption('with-middleware', null, Option::VALUE_NONE, '创建中间件配置');
     }
 
     protected function execute(Input $input, Output $output): int
@@ -54,6 +61,13 @@ class MakeAddon extends Command
         $options['with_model'] = $input->getOption('with-model');
         $options['with_validate'] = $input->getOption('with-validate');
         $options['with_public'] = $input->getOption('with-public');
+        $options['with_base'] = $input->getOption('with-base');
+        $options['with_config'] = $input->getOption('with-config');
+        $options['with_common'] = $input->getOption('with-common');
+        $options['with_service'] = $input->getOption('with-service');
+        $options['with_provider'] = $input->getOption('with-provider');
+        $options['with_event'] = $input->getOption('with-event');
+        $options['with_middleware'] = $input->getOption('with-middleware');
 
         try {
             $generator = app(Generator::class);

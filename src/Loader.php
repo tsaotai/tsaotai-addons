@@ -7,7 +7,6 @@ use think\facade\Config;
 use think\facade\Route;
 use think\facade\Event;
 use think\facade\Middleware;
-use think\facade\Request;
 
 class Loader
 {

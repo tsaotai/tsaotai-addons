@@ -4,6 +4,31 @@
 
 ---
 
+## [2026.1.3] - 2026-05-08
+
+### ✨ 新功能
+
+- **增强插件生成器** - 更新 `MakeAddon` 命令和 `Generator` 类，支持以下新选项：
+  - `--with-base` - 生成插件自己的 `controller/Base.php`（默认启用）
+  - `--with-config` - 生成 `config.php` 插件配置文件
+  - `--with-common` - 生成 `common.php` 公共函数文件
+  - `--with-service` - 生成 `service.php` 服务文件
+  - `--with-provider` - 生成 `provider.php` 服务提供者
+  - `--with-event` - 生成 `event.php` 事件配置
+  - `--with-middleware` - 生成 `middleware.php` 中间件配置
+
+### 🔧 改进
+
+- **更新控制器继承链** - 主控制器现在继承插件自己的 `Base`（继承 `addons\common\AuthBase`），符合最新架构规范
+- **更新视图模板** - 使用 ThinkPHP 模板引擎格式，继承 `admin@public/base`
+- **代码简化** - Service.php 使用箭头函数简化服务绑定代码
+
+### 📚 文档
+
+- 更新 README.md，添加新生成器选项说明
+
+---
+
 ## [2026.1.2] - 2026-05-08
 
 ### 🛡️ 稳定性修复

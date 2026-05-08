@@ -14,14 +14,10 @@ class Service extends ThinkService
         $this->loadConfig();
 
         // 注册 Generator 服务
-        $this->app->bind(Generator::class, function () {
-            return new Generator($this->app);
-        });
+        $this->app->bind(Generator::class, fn() => new Generator($this->app));
 
         // 注册 Addons 服务
-        $this->app->bind('addons', function () {
-            return new Addons($this->app->make(Generator::class));
-        });
+        $this->app->bind('addons', fn() => new Addons($this->app->make(Generator::class)));
     }
 
     public function boot(): void
