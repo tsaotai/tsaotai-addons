@@ -12,11 +12,12 @@ class Router
         $addonNames = AddonDiscovery::getAddonNames();
 
         foreach ($addonNames as $dirName) {
-            // 必须存在配置文件
+            // 必须存在配置文件且 identifier 与目录名一致
             if (!AddonDiscovery::hasConfig($dirName)) continue;
+            if (!AddonDiscovery::validateIdentifier($dirName)) continue;
 
             $config = AddonDiscovery::getConfig($dirName);
-            
+
             // 检查插件是否启用
             if (($config['state'] ?? 'enable') !== 'enable') continue;
 

@@ -4,6 +4,21 @@
 
 ---
 
+## [2026.1.2] - 2026-05-08
+
+### 🛡️ 稳定性修复
+
+- **移除不正确的 `Request::bind()` 用法** - Loader.php 中移除了对 `request.php` 文件的自动加载，因为原来的用法不符合 ThinkPHP 8 的规范
+- **新增 `validateIdentifier()` 方法** - 在 AddonDiscovery.php 中添加了插件 identifier 与目录名一致性校验
+- **增强 Loader 安全性** - 加载插件时校验 identifier，不一致则跳过，防止配置错误导致的潜在问题
+- **增强 Router 安全性** - 路由注册时校验 identifier，不一致则跳过
+
+### 📚 文档
+
+- 更新 README.md，添加稳定性修复说明
+
+---
+
 ## [2026.1.1] - 2026-05-07
 
 ### 🚀 重大更新

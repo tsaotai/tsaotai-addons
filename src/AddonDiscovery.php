@@ -99,4 +99,22 @@ class AddonDiscovery
     {
         return is_file(self::getAddonPath($name) . DIRECTORY_SEPARATOR . 'install.lock');
     }
+
+    /**
+     * 校验插件 identifier 是否与目录名一致
+     *
+     * @param string $name 插件目录名
+     * @return bool
+     */
+    public static function validateIdentifier(string $name): bool
+    {
+        $config = self::getConfig($name);
+        $identifier = $config['identifier'] ?? '';
+
+        if (empty($identifier)) {
+            return false;
+        }
+
+        return $identifier === $name;
+    }
 }

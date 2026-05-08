@@ -224,65 +224,65 @@ addons/
 ```php
 <?php
 return [
-    // 【核心唯一标识】必须与插件目录名一致
+    // 【核心唯一标识】必须与插件目录名一致，小写字母，不可重复、不可修改
     'identifier' => 'demo',
     
-    // 【插件展示名称】后台显示
+    // 【插件展示名称】后台列表、插件页头部正式显示名称，支持中文
     'title' => '示例插件',
     
-    // 【插件完整描述】详细说明
+    // 【插件完整描述】详细说明插件作用、能力、使用场景，禁止过短，便于后期查阅
     'description' => '这是一个示例插件',
     
-    // 【当前版本号】语义化版本
+    // 【当前版本号】语义化版本格式 主版本.次版本.修订号
     'version' => '2026.1.1',
     
-    // 【开发作者】
+    // 【开发作者】填写开发负责人/团队名称，用于版权与溯源
     'author' => '教员',
     
-    // 【创建/更新日期】
+    // 【创建/更新日期】固定格式 YYYY-MM-DD，版本迭代同步更新
     'create' => '2026-05-03',
     'update' => '2026-05-03',
     
-    // 【图标标识】BootstrapIcons 名称
+    // 【图标标识】BootstrapIcons 纯图标名，不带 bi- 前缀
     'icon' => 'tools',
     
-    // 【功能分类】tool/function/business
+    // 【功能分类】tool=工具类 / function=功能类 / business=业务类
     'category' => 'tool',
     
-    // 【排序权重】数字越大越靠前
+    // 【排序权重】纯数字，数值越大，后台插件列表展示越靠前
     'sort' => 0,
     
-    // 【运行状态】enable/disable
+    // 【运行状态】enable=默认启用 / disable=默认禁用
     'state' => 'enable',
     
-    // 【独立配置页】true/false
+    // 【独立配置页】布尔值 true=存在单独配置页面 / false=无额外配置
     'config' => false,
     
-    // 【安装流程】是否需要安装逻辑
+    // 【安装流程】布尔值 true=需要执行安装逻辑（建表/初始化数据） / false=直接启用
     'install' => true,
     
-    // 【卸载清理】是否删除数据
+    // 【卸载清理】布尔值 true=卸载同步删除业务数据 / false=保留数据，防止误删丢失
     'clean' => false,
     
-    // 【依赖插件】逗号分隔
+    // 【依赖插件】多个依赖逗号分隔，无依赖留空；填写目标插件 identifier 标识
     'rely' => '',
     
-    // 【后台访问入口】
+    // 【后台访问入口】插件独立管理页面路由地址，用于菜单点击跳转
     'entry' => 'addons/demo',
     
-    // 【适用范围】admin/index/all
+    // 【适用范围】admin=仅后台使用 / index=仅前台使用 / all=全模块通用
     'scope' => 'admin',
     
-    // 【插件品类】free/basic/pro
+    // 【插件品类】free=免费版 / basic=基础版 / pro=专业付费版
     'classify' => 'free',
     
-    // 【文档地址】
+    // 【文档地址】填写文档/知识库链接，无文档留空
     'domain' => '',
     
-    // 【开源协议】
+    // 【开源协议】标注版权协议，内部项目可自定义填写内部专用
     'licence' => 'Apache-2.0',
     
-    // 【补充备注】
+    // 【补充备注】填写使用注意事项、特殊说明、限制条件，运营/维护查看
     'remark' => ''
 ];
 ```
@@ -318,6 +318,14 @@ class Demo extends BaseController
     }
 }
 ```
+
+**视图解析规则**：
+
+`BaseController::fetch()` 方法严格遵循 TP8 原生规范：
+
+- 空模板时：自动解析为 `控制器目录/控制器名(小写)/方法名`
+- 示例：`Demo::index()` → `view/demo/index.html`
+- 支持完整路径：`$this->fetch('demo/index')`
 
 ### 4. 开发插件管理控制器
 
@@ -385,7 +393,47 @@ class Plugin extends PluginController
 - `data/plugin/rule.md` - 使用规则
 - `data/plugin/readme.md` - 数据说明
 
-### 7. 使用助手函数
+### 7. 自定义路由
+
+插件可以在 `route.php` 中定义自定义路由：
+
+```php
+<?php
+use think\facade\Route;
+
+// 插件自定义路由示例
+Route::get('demo/api/list', 'addons\demo\controller\Demo@list');
+```
+
+**自动路由注册**：
+
+系统会自动为每个启用的插件注册以下标准路由：
+
+| 路由 | 方法 | 说明 |
+| --- | --- | --- |
+| `plugin/{identifier}` | ANY | 插件管理首页 |
+| `plugin/{identifier}/install` | ANY | 安装插件 |
+| `plugin/{identifier}/uninstall` | ANY | 卸载插件 |
+| `plugin/{identifier}/update` | ANY | 更新日志 |
+| `plugin/{identifier}/rule` | ANY | 使用规则 |
+
+### 8. 加载插件资源
+
+插件可以加载多种资源文件：
+
+```php
+// 配置文件：config.php
+// 公共函数：common.php  
+// 请求绑定：request.php
+// 服务文件：service.php
+// 依赖注入：provider.php
+// 事件监听：event.php
+// 中间件：middleware.php
+```
+
+这些文件会在插件加载时自动引入。
+
+### 9. 使用助手函数
 
 包提供了便捷的助手函数：
 
@@ -431,7 +479,7 @@ $demoPath = addons_path('demo');
 $pluginConfig = addons_path('demo/plugin.php');
 ```
 
-### 8. 访问插件
+### 10. 访问插件
 
 - 前台页面：`http://your-domain/addons/demo`
 - 插件管理：`http://your-domain/plugin/demo`
@@ -475,16 +523,16 @@ Addons::create('demo', ['title' => '示例插件']);
 
 | 类名 | 说明 |
 | --- | --- |
-| `tsaotai\addons\BaseController` | 插件基础控制器（推荐新插件使用） |
+| `tsaotai\addons\BaseController` | 插件基础控制器（推荐新插件使用），1:1 复刻 TP8 原生视图解析规则 |
 | `tsaotai\addons\CommonController` | 旧版本基础控制器（保留，向后兼容） |
-| `tsaotai\addons\PluginController` | 插件管理控制器 |
-| `tsaotai\addons\Loader` | 插件加载器 |
-| `tsaotai\addons\Router` | 插件路由注册器 |
-| `tsaotai\addons\Addons` | 插件管理器 |
-| `tsaotai\addons\Generator` | 插件生成器 |
+| `tsaotai\addons\PluginController` | 插件管理控制器，提供安装/卸载/update/rule 方法 |
+| `tsaotai\addons\Loader` | 插件加载器，自动加载配置、路由、事件、中间件等 |
+| `tsaotai\addons\Router` | 插件路由注册器，自动注册标准插件路由 |
+| `tsaotai\addons\Addons` | 插件管理器，提供插件列表、创建等功能 |
+| `tsaotai\addons\Generator` | 插件生成器，命令行创建插件的核心实现 |
 | `tsaotai\addons\AddonDiscovery` | 插件发现服务（统一插件目录扫描） |
 | `tsaotai\addons\Config` | 配置管理类 |
-| `tsaotai\addons\Service` | ThinkPHP 服务提供者 |
+| `tsaotai\addons\Service` | ThinkPHP 服务提供者，自动注册服务和命令 |
 
 ### Facade API
 
@@ -504,27 +552,52 @@ Addons::create('demo', ['title' => '示例插件']);
 | `Config::set($name, $value)` | 设置配置 |
 | `Config::load($config)` | 加载配置 |
 
+### AddonDiscovery API
+
+| 方法 | 说明 |
+| --- | --- |
+| `AddonDiscovery::getAddonNames()` | 获取所有插件目录名称 |
+| `AddonDiscovery::getAddonPath($name)` | 获取插件路径 |
+| `AddonDiscovery::exists($name)` | 检查插件是否存在 |
+| `AddonDiscovery::hasConfig($name)` | 检查插件是否有配置文件 |
+| `AddonDiscovery::getConfig($name)` | 获取插件配置 |
+| `AddonDiscovery::isInstalled($name)` | 检查插件是否已安装 |
+
 ---
 
 ## 插件开发规范
 
 ### 命名规范
 
-- 插件目录名：纯小写英文，无下划线
+- 插件目录名：纯小写英文，无下划线，不可修改
 - 控制器类名：大驼峰，继承对应基类
 - 视图文件：小写下划线分隔
+- 配置字段：小写字母，下划线分隔
 
 ### 目录说明
 
-- `controller/` - 控制器
-- `view/` - 视图
-- `data/` - 数据文件（可选）
-- `model/` - 模型（可选）
-- `validate/` - 验证器（可选）
-- `public/` - 公共资源（可选）
-- `plugin.php` - 插件配置（必填）
-- `route.php` - 插件路由（可选）
-- `common.php` - 公共函数（可选）
+| 目录/文件 | 说明 | 必填 |
+| --- | --- | --- |
+| `controller/` | 控制器 | 是 |
+| `view/` | 视图 | 是 |
+| `data/` | 数据文件（update.md/rule.md） | 是 |
+| `model/` | 模型 | 否 |
+| `validate/` | 验证器 | 否 |
+| `public/` | 公共资源（css/js/images） | 否 |
+| `plugin.php` | 插件配置 | **是** |
+| `route.php` | 插件路由 | 否 |
+| `common.php` | 公共函数 | 否 |
+| `request.php` | 请求绑定 | 否 |
+| `service.php` | 服务文件 | 否 |
+| `provider.php` | 依赖注入 | 否 |
+| `event.php` | 事件监听 | 否 |
+| `middleware.php` | 中间件 | 否 |
+
+### 版本号规范
+
+采用年份.季度.修订号格式：
+- `2026.1.1` - 2026年第一季度第1个版本
+- `2026.2.3` - 2026年第二季度第3个版本
 
 ---
 
@@ -537,6 +610,11 @@ Addons::create('demo', ['title' => '示例插件']);
    - 旧插件可以继续使用
 2. **新插件建议**：直接继承 `BaseController`
 3. 版本号格式更新为 2026.1.1
+4. `BaseController::fetch()` 采用 TP8 原生视图解析规则
+5. **稳定性修复**：
+   - 移除不正确的 `Request::bind()` 用法（`request.php` 文件不再自动加载）
+   - 增加 `AddonDiscovery::validateIdentifier()` 方法，校验插件 identifier 与目录名一致
+   - 加载器和路由注册时会跳过 identifier 不一致的插件，防止配置错误导致的潜在问题
 
 ### 从 1.5.x 升级到 1.6.x
 
@@ -575,4 +653,6 @@ Addons::create('demo', ['title' => '示例插件']);
 
 ---
 
-##
+## License
+
+Apache-2.0

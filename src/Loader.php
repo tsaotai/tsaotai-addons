@@ -17,8 +17,11 @@ class Loader
 
         foreach ($addonNames as $plugin) {
             // 获取插件配置和状态
-            $config = null;
             if (AddonDiscovery::hasConfig($plugin)) {
+                // 校验 identifier 是否与目录名一致
+                if (!AddonDiscovery::validateIdentifier($plugin)) {
+                    continue;
+                }
                 $config = AddonDiscovery::getConfig($plugin);
                 if (($config['state'] ?? 'enable') !== 'enable') {
                     continue;
@@ -35,7 +38,6 @@ class Loader
 
             // 加载插件工具文件
             is_file($pluginDir . 'common.php')   && require_once $pluginDir . 'common.php';
-            is_file($pluginDir . 'request.php')  && Request::bind(include $pluginDir . 'request.php');
             is_file($pluginDir . 'service.php')  && include $pluginDir . 'service.php';
             is_file($pluginDir . 'provider.php') && app()->bind(include $pluginDir . 'provider.php');
             is_file($pluginDir . 'event.php')    && Event::load(include $pluginDir . 'event.php');
