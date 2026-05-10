@@ -26,9 +26,9 @@
 我正在使用 TsaoTai Addons (ThinkPHP 8 插件系统) 开发一个插件。
 
 项目信息：
-- 版本：2026.1.1
+- 版本：2026.1.4
 - 插件目录：addons/
-- 主控制器继承：tsaotai\addons\BaseController
+- 主控制器继承：插件自己的 Base（继承 addons\common\AuthBase）
 - 管理控制器继承：tsaotai\addons\PluginController
 
 请帮我开发一个 [插件功能描述] 的插件。
@@ -46,6 +46,53 @@
 3. 包含控制器、视图、配置
 
 请提供完整的文件结构和代码。
+```
+
+---
+
+## 命令行快速参考
+
+### 完整选项列表
+
+```bash
+php think addon:make [插件名] [选项]
+```
+
+### 基本信息选项
+
+| 选项 | 说明 |
+|------|------|
+| `--title` | 插件标题 |
+| `--description` | 插件描述 |
+| `--author` | 插件作者 |
+| `--plugin-version` | 插件版本号 |
+
+### 可选功能选项
+
+| 选项 | 说明 | AI 使用场景 |
+|------|------|-------------|
+| `--with-base` | 创建插件 Base 控制器（默认启用） | ✅ 总是使用 |
+| `--with-model` | 创建 model 目录 | 需要数据库操作时 |
+| `--with-validate` | 创建 validate 目录 | 需要表单验证时 |
+| `--with-public` | 创建 public 资源目录 | 需要 CSS/JS/图片时 |
+| `--with-config` | 创建 config.php | 需要插件配置时 |
+| `--with-common` | 创建 common.php | 需要公共函数时 |
+| `--with-service` | 创建 service.php | 需要服务定义时 |
+| `--with-provider` | 创建 provider.php | 需要服务容器绑定时 |
+| `--with-event` | 创建 event.php | 需要事件监听时 |
+| `--with-middleware` | 创建 middleware.php | 需要中间件时 |
+
+### 常见组合
+
+```bash
+# 简单展示插件
+php think addon:make myplugin --title="我的插件"
+
+# 管理型插件（带模型和验证）
+php think addon:make adminplugin --title="管理插件" --with-model --with-validate
+
+# 完整功能插件
+php think addon:make fullplugin --title="完整插件" --with-model --with-validate --with-public --with-config --with-common
 ```
 
 ---

@@ -4,6 +4,32 @@
 
 ---
 
+## [2026.1.4] - 2026-05-11
+
+### ✨ 新功能
+
+- **增强插件生成器** - 新增更多可选文件选项：
+  - `--with-base` - 创建插件自己的 `controller/Base.php`（默认启用，继承 `addons\common\AuthBase`）
+  - `--with-config` - 创建 `config.php` 插件配置文件
+  - `--with-common` - 创建 `common.php` 公共函数文件
+  - `--with-service` - 创建 `service.php` 服务文件
+  - `--with-provider` - 创建 `provider.php` 服务提供者
+  - `--with-event` - 创建 `event.php` 事件配置
+  - `--with-middleware` - 创建 `middleware.php` 中间件配置
+
+### 🔧 改进
+
+- **优化控制器继承结构** - 主控制器现在继承插件自己的 Base（继承 `addons\common\AuthBase`）
+- **更新视图模板** - 统一使用 ThinkPHP 模板引擎格式，继承 `admin@public/base`
+- **完善文档** - 更新 README.md，添加所有新选项的说明
+- **优化插件生成器** - 新增 `createOptionalFiles()` 方法统一处理可选文件
+
+### 📚 文档
+
+- 更新 README.md，新增生成器选项、目录结构、升级指南等内容
+
+---
+
 ## [2026.1.3] - 2026-05-08
 
 ### ✨ 新功能

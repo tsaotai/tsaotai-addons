@@ -153,6 +153,13 @@ php think addon:make demo --with-model --with-validate --with-public
 | `--with-model` | 创建 model 目录 |
 | `--with-validate` | 创建 validate 目录 |
 | `--with-public` | 创建 public 目录 |
+| `--with-base` | 创建插件自己的 Base 控制器（继承 `addons\common\AuthBase`，默认启用） |
+| `--with-config` | 创建 `config.php` 插件配置文件 |
+| `--with-common` | 创建 `common.php` 公共函数文件 |
+| `--with-service` | 创建 `service.php` 服务文件 |
+| `--with-provider` | 创建 `provider.php` 服务提供者 |
+| `--with-event` | 创建 `event.php` 事件配置 |
+| `--with-middleware` | 创建 `middleware.php` 中间件配置 |
 
 ### 方式 2：代码方式
 
@@ -602,6 +609,29 @@ Addons::create('demo', ['title' => '示例插件']);
 ---
 
 ## 升级指南
+
+### 从 2026.1.x 升级到 2026.1.4
+
+1. **完全兼容，无需修改现有插件代码** ✅
+2. **新功能**：插件生成器新增多个可选文件选项
+   - `--with-base` - 创建插件自己的 Base 控制器（默认启用）
+   - `--with-config` - 创建 config.php
+   - `--with-common` - 创建 common.php
+   - `--with-service` - 创建 service.php
+   - `--with-provider` - 创建 provider.php
+   - `--with-event` - 创建 event.php
+   - `--with-middleware` - 创建 middleware.php
+3. **新插件结构优化**：
+   - 主控制器现在继承插件自己的 Base（继承 `addons\common\AuthBase`）
+   - 视图模板统一使用 `{extend name="admin@public/base"}`
+
+### 从 2026.1.1 升级到 2026.1.2
+
+1. **完全兼容，无需修改现有插件代码** ✅
+2. **稳定性修复**：
+   - 移除不正确的 `Request::bind()` 用法（`request.php` 文件不再自动加载）
+   - 增加 `AddonDiscovery::validateIdentifier()` 方法，校验插件 identifier 与目录名一致
+   - 加载器和路由注册时会跳过 identifier 不一致的插件，防止配置错误导致的潜在问题
 
 ### 从 1.7.x 升级到 2026.1.1
 
