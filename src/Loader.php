@@ -7,10 +7,25 @@ use think\facade\Config;
 use think\facade\Route;
 use think\facade\Event;
 use think\facade\Middleware;
-use think\facade\Log;
 
 class Loader
 {
+    private static function useLog(): bool
+    {
+        return class_exists('\think\facade\Log');
+    }
+
+    private static function log(string $level, string $message): void
+    {
+        if (self::useLog()) {
+            try {
+                \think\facade\Log::$level($message);
+            } catch (\Throwable $e) {
+                // 日志记录失败，忽略
+            }
+        }
+    }
+
     public static function load(): void
     {
         $addonNames = AddonDiscovery::getAddonNames();
@@ -21,7 +36,7 @@ class Loader
                 if (AddonDiscovery::hasConfig($plugin)) {
                     // 校验 identifier 是否与目录名一致
                     if (!AddonDiscovery::validateIdentifier($plugin)) {
-                        Log::warning("插件 {$plugin} 的 identifier 与目录名不一致，跳过加载");
+                        self::log('warning', "插件 {$plugin} 的 identifier 与目录名不一致，跳过加载");
                         continue;
                     }
                     $config = AddonDiscovery::getConfig($plugin);
@@ -53,9 +68,9 @@ class Loader
                     })->namespace("addons\\{$plugin}\\controller");
                 }
             } catch (\Exception $e) {
-                Log::error("加载插件 {$plugin} 失败: " . $e->getMessage());
+                self::log('error', "加载插件 {$plugin} 失败: " . $e->getMessage());
             } catch (\Error $e) {
-                Log::error("加载插件 {$plugin} 出错: " . $e->getMessage());
+                self::log('error', "加载插件 {$plugin} 出错: " . $e->getMessage());
             }
         }
     }

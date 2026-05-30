@@ -507,6 +507,52 @@ $addons = Addons::scanAddons();
 
 // 创建新插件
 Addons::create('demo', ['title' => '示例插件']);
+
+// 清除所有缓存
+Addons::clearCache();
+
+// 清除单个插件缓存
+Addons::clearPluginCache('demo');
+```
+
+---
+
+## 缓存管理
+
+### 缓存机制
+
+扩展包内置了缓存机制，自动缓存插件列表和插件配置，提升性能：
+
+- **缓存驱动**：使用 ThinkPHP 默认的缓存驱动（通常是文件缓存，存储在 `runtime/cache/`）
+- **缓存有效期**：1小时（3600秒）
+- **自动清理**：安装/卸载插件、创建新插件时会自动清除缓存
+
+### 手动清除缓存
+
+```php
+<?php
+use tsaotai\addons\AddonDiscovery;
+use tsaotai\addons\facade\Addons;
+
+// 方式 1：使用 AddonDiscovery
+AddonDiscovery::clearCache();
+AddonDiscovery::clearPluginCache('demo');
+
+// 方式 2：使用 Facade
+Addons::clearCache();
+Addons::clearPluginCache('demo');
+```
+
+### 禁用缓存（临时）
+
+如果需要临时禁用缓存，可以直接调用不使用缓存的方法：
+
+```php
+<?php
+use tsaotai\addons\AddonDiscovery;
+
+// 获取插件列表，不使用缓存
+$addons = AddonDiscovery::getAddonNames(false);
 ```
 
 ---

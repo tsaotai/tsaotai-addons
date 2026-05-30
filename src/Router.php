@@ -4,10 +4,25 @@ declare (strict_types=1);
 namespace tsaotai\addons;
 
 use think\facade\Route;
-use think\facade\Log;
 
 class Router
 {
+    private static function useLog(): bool
+    {
+        return class_exists('\think\facade\Log');
+    }
+
+    private static function log(string $level, string $message): void
+    {
+        if (self::useLog()) {
+            try {
+                \think\facade\Log::$level($message);
+            } catch (\Throwable $e) {
+                // 日志记录失败，忽略
+            }
+        }
+    }
+
     public static function register(): void
     {
         $addonNames = AddonDiscovery::getAddonNames();
@@ -17,7 +32,7 @@ class Router
                 // 必须存在配置文件且 identifier 与目录名一致
                 if (!AddonDiscovery::hasConfig($dirName)) continue;
                 if (!AddonDiscovery::validateIdentifier($dirName)) {
-                    Log::warning("插件 {$dirName} 的 identifier 与目录名不一致，跳过路由注册");
+                    self::log('warning', "插件 {$dirName} 的 identifier 与目录名不一致，跳过路由注册");
                     continue;
                 }
 
@@ -37,9 +52,9 @@ class Router
                 Route::any("plugin/{$identifier}/uninstall", "{$controller}@uninstall");
                 Route::any("plugin/{$identifier}",           "{$controller}@index");
             } catch (\Exception $e) {
-                Log::error("注册插件 {$dirName} 路由失败: " . $e->getMessage());
+                self::log('error', "注册插件 {$dirName} 路由失败: " . $e->getMessage());
             } catch (\Error $e) {
-                Log::error("注册插件 {$dirName} 路由出错: " . $e->getMessage());
+                self::log('error', "注册插件 {$dirName} 路由出错: " . $e->getMessage());
             }
         }
     }

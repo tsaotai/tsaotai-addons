@@ -3,13 +3,16 @@ declare (strict_types=1);
 
 namespace tsaotai\addons;
 
-use think\facade\Cache;
-
 class AddonDiscovery
 {
     private const CACHE_KEY_ADDONS = 'tsaotai_addons_list';
     private const CACHE_KEY_CONFIG_PREFIX = 'tsaotai_addons_config_';
     private const CACHE_TTL = 3600;
+
+    private static function useCache(): bool
+    {
+        return class_exists('\think\facade\Cache');
+    }
 
     /**
      * 获取所有插件目录名称
@@ -19,10 +22,14 @@ class AddonDiscovery
      */
     public static function getAddonNames(bool $useCache = true): array
     {
-        if ($useCache) {
-            $cached = Cache::get(self::CACHE_KEY_ADDONS);
-            if ($cached !== null) {
-                return $cached;
+        if ($useCache && self::useCache()) {
+            try {
+                $cached = \think\facade\Cache::get(self::CACHE_KEY_ADDONS);
+                if ($cached !== null) {
+                    return $cached;
+                }
+            } catch (\Throwable $e) {
+                // 缓存不可用，使用正常流程
             }
         }
 
@@ -40,8 +47,12 @@ class AddonDiscovery
             }
         }
 
-        if ($useCache) {
-            Cache::set(self::CACHE_KEY_ADDONS, $names, self::CACHE_TTL);
+        if ($useCache && self::useCache()) {
+            try {
+                \think\facade\Cache::set(self::CACHE_KEY_ADDONS, $names, self::CACHE_TTL);
+            } catch (\Throwable $e) {
+                // 缓存存储失败，继续
+            }
         }
         return $names;
     }
@@ -99,9 +110,16 @@ class AddonDiscovery
     public static function getConfig(string $name): array
     {
         $cacheKey = self::CACHE_KEY_CONFIG_PREFIX . $name;
-        $cached = Cache::get($cacheKey);
-        if ($cached !== null) {
-            return $cached;
+
+        if (self::useCache()) {
+            try {
+                $cached = \think\facade\Cache::get($cacheKey);
+                if ($cached !== null) {
+                    return $cached;
+                }
+            } catch (\Throwable $e) {
+                // 缓存读取失败，使用正常流程
+            }
         }
 
         $configPath = self::getConfigPath($name);
@@ -111,7 +129,13 @@ class AddonDiscovery
             $config = is_array($config) ? $config : [];
         }
 
-        Cache::set($cacheKey, $config, self::CACHE_TTL);
+        if (self::useCache()) {
+            try {
+                \think\facade\Cache::set($cacheKey, $config, self::CACHE_TTL);
+            } catch (\Throwable $e) {
+                // 缓存存储失败，继续
+            }
+        }
         return $config;
     }
 
@@ -151,11 +175,19 @@ class AddonDiscovery
      */
     public static function clearCache(): void
     {
-        Cache::delete(self::CACHE_KEY_ADDONS);
+        if (!self::useCache()) {
+            return;
+        }
 
-        $addons = self::getAddonNames(false); // 不使用缓存重新读取
-        foreach ($addons as $name) {
-            Cache::delete(self::CACHE_KEY_CONFIG_PREFIX . $name);
+        try {
+            \think\facade\Cache::delete(self::CACHE_KEY_ADDONS);
+
+            $addons = self::getAddonNames(false);
+            foreach ($addons as $name) {
+                \think\facade\Cache::delete(self::CACHE_KEY_CONFIG_PREFIX . $name);
+            }
+        } catch (\Throwable $e) {
+            // 缓存清除失败，忽略
         }
     }
 
@@ -167,7 +199,15 @@ class AddonDiscovery
      */
     public static function clearPluginCache(string $name): void
     {
-        Cache::delete(self::CACHE_KEY_CONFIG_PREFIX . $name);
-        Cache::delete(self::CACHE_KEY_ADDONS); // 也清除列表缓存，因为可能影响
+        if (!self::useCache()) {
+            return;
+        }
+
+        try {
+            \think\facade\Cache::delete(self::CACHE_KEY_CONFIG_PREFIX . $name);
+            \think\facade\Cache::delete(self::CACHE_KEY_ADDONS);
+        } catch (\Throwable $e) {
+            // 缓存清除失败，忽略
+        }
     }
 }
