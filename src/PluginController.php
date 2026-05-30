@@ -98,6 +98,7 @@ abstract class PluginController extends BaseController
             return json(['code' => 0, 'msg' => '插件已安装']);
         }
         file_put_contents($this->lockFile, (string)time());
+        AddonDiscovery::clearPluginCache($this->addonName);
         return json(['code' => 1, 'msg' => '插件安装成功']);
     }
 
@@ -108,6 +109,7 @@ abstract class PluginController extends BaseController
             return json(['code' => 0, 'msg' => '插件未安装']);
         }
         unlink($this->lockFile);
+        AddonDiscovery::clearPluginCache($this->addonName);
         return json(['code' => 1, 'msg' => '插件卸载成功']);
     }
 }

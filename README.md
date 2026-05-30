@@ -563,12 +563,22 @@ Addons::create('demo', ['title' => '示例插件']);
 
 | 方法 | 说明 |
 | --- | --- |
-| `AddonDiscovery::getAddonNames()` | 获取所有插件目录名称 |
+| `AddonDiscovery::getAddonNames($useCache = true)` | 获取所有插件目录名称（支持缓存） |
 | `AddonDiscovery::getAddonPath($name)` | 获取插件路径 |
 | `AddonDiscovery::exists($name)` | 检查插件是否存在 |
 | `AddonDiscovery::hasConfig($name)` | 检查插件是否有配置文件 |
-| `AddonDiscovery::getConfig($name)` | 获取插件配置 |
+| `AddonDiscovery::getConfig($name)` | 获取插件配置（支持缓存） |
 | `AddonDiscovery::isInstalled($name)` | 检查插件是否已安装 |
+| `AddonDiscovery::validateIdentifier($name)` | 校验插件 identifier 与目录名一致 |
+| `AddonDiscovery::clearCache()` | 清除所有插件缓存 |
+| `AddonDiscovery::clearPluginCache($name)` | 清除单个插件缓存 |
+
+### Addons Facade API（新增）
+
+| 方法 | 说明 |
+| --- | --- |
+| `Addons::clearCache()` | 清除所有插件缓存 |
+| `Addons::clearPluginCache($name)` | 清除单个插件缓存 |
 
 ---
 
@@ -609,6 +619,28 @@ Addons::create('demo', ['title' => '示例插件']);
 ---
 
 ## 升级指南
+
+### 从 2026.1.x 升级到 2026.1.5
+
+1. **完全兼容，无需修改现有插件代码** ✅
+2. **性能优化**：新增配置缓存机制，提升插件加载性能
+   - 插件列表缓存（TTL 1小时）
+   - 插件配置缓存（TTL 1小时）
+3. **稳定性提升**：新增异常处理，单个插件失败不影响其他插件
+   - Loader 加载插件时自动捕获异常
+   - Router 注册路由时自动捕获异常
+   - 使用 Log 记录警告和错误信息
+4. **自动缓存清理**：
+   - 安装/卸载插件时自动清除缓存
+   - 创建新插件时自动清除缓存
+5. **新增 API**：
+   - `AddonDiscovery::clearCache()` - 清除所有缓存
+   - `AddonDiscovery::clearPluginCache()` - 清除单个插件缓存
+   - `Addons::clearCache()` - Facade 方式清除所有缓存
+   - `Addons::clearPluginCache()` - Facade 方式清除单个插件缓存
+6. **Bug 修复**：
+   - 修复 route.php 重复加载问题
+   - 修复 createBaseController 逻辑错误
 
 ### 从 2026.1.x 升级到 2026.1.4
 

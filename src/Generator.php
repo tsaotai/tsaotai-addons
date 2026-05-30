@@ -221,7 +221,9 @@ PHP;
 
     protected function createBaseController(string $path, string $name, array $options): void
     {
-        if (!empty($options['with_base']) || empty($options['with_base'])) {
+        // 默认创建，除非显式传入 --without-base（注意：当前命令没有 --without-base，保持原有行为）
+        // --with-base 选项的默认行为是创建，这里保持兼容性
+        if (!isset($options['with_base']) || !empty($options['with_base'])) {
             $namespace = 'addons\\' . $name . '\\controller';
             $content = <<<PHP
 <?php

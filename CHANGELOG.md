@@ -4,6 +4,34 @@
 
 ---
 
+## [2026.1.5] - 2026-05-11
+
+### 🐛 修复
+
+- **修复 route.php 重复加载问题** - Router 中移除了对 route.php 的重复加载，避免路由冲突
+- **修复 createBaseController 逻辑错误** - 修复了条件判断逻辑，保持原有行为
+
+### ✨ 新功能
+
+- **添加配置缓存机制** - 使用 ThinkPHP Cache 缓存插件列表和配置，提升性能
+  - `AddonDiscovery::getAddonNames()` - 支持缓存，TTL 1小时
+  - `AddonDiscovery::getConfig()` - 支持缓存，TTL 1小时
+  - `AddonDiscovery::clearCache()` - 清除所有缓存
+  - `AddonDiscovery::clearPluginCache()` - 清除单个插件缓存
+
+- **添加异常处理** - 增强系统稳定性
+  - `Loader::load()` - 添加 try-catch，单个插件失败不影响其他插件
+  - `Router::register()` - 添加 try-catch，单个插件路由注册失败不影响其他插件
+  - 使用 Log 记录警告和错误信息
+
+### 🔧 改进
+
+- **PluginController 安装/卸载时自动清除缓存** - 确保缓存及时更新
+- **Addons::create() 创建插件后自动清除缓存** - 确保新插件立即可见
+- **Addons::clearCache() / clearPluginCache()** - 新增方法方便外部调用
+
+---
+
 ## [2026.1.4] - 2026-05-11
 
 ### ✨ 新功能

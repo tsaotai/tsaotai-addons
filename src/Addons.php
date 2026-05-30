@@ -45,7 +45,23 @@ class Addons
 
     public function create(string $name, array $options = []): bool
     {
-        return $this->generator->create($name, $options);
+        $result = $this->generator->create($name, $options);
+        if ($result) {
+            AddonDiscovery::clearCache();
+        }
+        return $result;
+    }
+
+    public function clearCache(): void
+    {
+        AddonDiscovery::clearCache();
+        $this->addons = [];
+    }
+
+    public function clearPluginCache(string $name): void
+    {
+        AddonDiscovery::clearPluginCache($name);
+        $this->addons = [];
     }
 
     protected function getAddonInfo(string $name): array
