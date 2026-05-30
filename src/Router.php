@@ -51,6 +51,13 @@ class Router
                 Route::any("plugin/{$identifier}/install",   "{$controller}@install");
                 Route::any("plugin/{$identifier}/uninstall", "{$controller}@uninstall");
                 Route::any("plugin/{$identifier}",           "{$controller}@index");
+
+                // 加载插件自定义路由（无分组包装，保持原有路由格式）
+                $pluginDir = AddonDiscovery::getAddonPath($dirName);
+                $routeFile = $pluginDir . DIRECTORY_SEPARATOR . 'route.php';
+                if (is_file($routeFile)) {
+                    require $routeFile;
+                }
             } catch (\Exception $e) {
                 self::log('error', "注册插件 {$dirName} 路由失败: " . $e->getMessage());
             } catch (\Error $e) {
