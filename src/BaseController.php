@@ -77,7 +77,11 @@ abstract class BaseController
     }
 
     /**
-     * 自动绑定插件视图路径
+     * 绑定插件视图目录。不复制主题 base.html。
+     *
+     * think-template 对带 .html 的 {extend name} 直接 is_file()，
+     * 工作目录为 public/ 时，{extend name="../view/smartadmin/base.html"}
+     * 已指向项目根 view/，禁止在插件本地落主题副本。
      */
     protected function initAddonView()
     {

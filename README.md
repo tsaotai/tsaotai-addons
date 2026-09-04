@@ -23,7 +23,8 @@ tsaotai-addons/
 ├── src/                    # 核心源码
 │   ├── Addons.php         # 插件管理器
 │   ├── Loader.php         # 插件加载器
-│   ├── Router.php         # 路由注册器
+│   ├── Router.php         # 路由注册器（清单缓存 + plugin 单网关）
+│   ├── PluginGateway.php  # plugin/:id 管理路由分发
 │   ├── Generator.php      # 插件生成器
 │   ├── AddonDiscovery.php # 插件发现服务
 │   ├── BaseController.php # 基础控制器
@@ -176,6 +177,7 @@ Addons::clearPluginCache('demo');
 | `tsaotai\addons\PluginController` | 插件管理控制器 |
 | `tsaotai\addons\Loader` | 插件加载器 |
 | `tsaotai\addons\Router` | 路由注册器 |
+| `tsaotai\addons\PluginGateway` | `plugin/:id` 管理路由分发 |
 | `tsaotai\addons\Addons` | 插件管理器 |
 | `tsaotai\addons\Generator` | 插件生成器 |
 | `tsaotai\addons\AddonDiscovery` | 插件发现服务 |
@@ -206,6 +208,13 @@ Addons::clearPluginCache('demo');
 | `addons_path($path)` | 获取插件目录路径 |
 
 ## 升级指南
+
+### 从 2026.1.x 升级到 2026.1.8
+
+1. **插件业务路由无感**：各插件 `route.php` 照常加载
+2. **插件管理 URL 不变**：`/plugin/{id}`、`/plugin/{id}/update` 等仍可用，改为单路由分发
+3. **安装/卸载请用 POST**（原先 `Route::any` 的 GET 安装将返回 JSON 提示）
+4. 手动清路由清单：`tsaotai\addons\Router::clearManifest()`
 
 ### 从 2026.1.x 升级到 2026.1.7
 

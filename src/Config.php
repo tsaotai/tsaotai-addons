@@ -12,6 +12,7 @@ class Config
         'path' => '',
         'auto_register' => true,
         'auto_load' => true,
+        'route_manifest_ttl' => 3600,
     ];
 
     public static function get(?string $name = null, mixed $default = null): mixed

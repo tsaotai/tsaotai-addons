@@ -4,6 +4,16 @@
 
 ***
 
+## [2026.1.8] - 2026-09-04
+
+### 🔧 优化
+
+- **插件管理路由收口**：`plugin/:identifier/[:action]` 一条网关替代每个插件 5 条 `plugin/{id}/install|uninstall|...` 路由；install/uninstall 仅接受 POST
+- **路由清单缓存**：启用插件的 `route.php` 写入 `runtime/cache/addons_route_manifest.php`（默认 3600s，`app_debug` 下不缓存）；安装/卸载时 `Router::clearManifest()`
+- **BaseController**：明确不复制主题 `base.html`，只设置插件 `view_path`（`{extend name="../view/..."}` 解析到项目根 `view/`）
+
+---
+
 ## [2026.1.7] - 2026-05-30
 
 ### 🐛 修复
