@@ -19,7 +19,7 @@ composer require tsaotai/tsaotai-addons
 1. 加载该目录的 `config.php` / `common.php` / `service.php` / `provider.php` / `event.php` / `middleware.php`（有才加载）
 2. `require` `route.php`
 
-同一次请求（或 Worker 进程）内 `plugin.php` 只读一遍。改插件后立刻生效，不必清 `runtime/cache`。
+同一次请求（或 Worker 进程）内 `plugin.php` 只读一遍，`boot()` 只跑一次。改插件后立刻生效，不必清 `runtime/cache`。
 
 ## 控制器
 

@@ -9,6 +9,8 @@ use think\facade\Middleware;
 
 class Loader
 {
+    private static bool $booted = false;
+
     private static function log(string $level, string $message): void
     {
         if (!class_exists('\think\facade\Log')) {
@@ -25,12 +27,17 @@ class Loader
      */
     public static function boot(): void
     {
+        if (self::$booted) {
+            return;
+        }
+
         $load = (bool)Config::get('auto_load', true);
         $routes = (bool)Config::get('auto_register', true);
         if (!$load && !$routes) {
             return;
         }
 
+        self::$booted = true;
         foreach (AddonDiscovery::enabledNames() as $plugin) {
             $pluginDir = AddonDiscovery::getAddonPath($plugin) . DIRECTORY_SEPARATOR;
             if ($load) {
