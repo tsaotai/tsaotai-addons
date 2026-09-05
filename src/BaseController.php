@@ -4,10 +4,8 @@ declare (strict_types=1);
 namespace tsaotai\addons;
 
 use think\App;
-use think\exception\ValidateException;
 use think\Validate;
 use think\facade\View;
-use think\facade\Request;
 
 /**
  * 插件通用基础控制器

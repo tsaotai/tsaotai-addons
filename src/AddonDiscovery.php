@@ -5,209 +5,147 @@ namespace tsaotai\addons;
 
 class AddonDiscovery
 {
-    private const CACHE_KEY_ADDONS = 'tsaotai_addons_list';
-    private const CACHE_KEY_CONFIG_PREFIX = 'tsaotai_addons_config_';
-    private const CACHE_TTL = 3600;
+    /** @var list<string>|null */
+    private static ?array $names = null;
 
-    private static function useCache(): bool
+    /** @var array<string, array> */
+    private static array $configs = [];
+
+    private static function log(string $level, string $message): void
     {
-        return class_exists('\think\facade\Cache');
+        if (!class_exists('\think\facade\Log')) {
+            return;
+        }
+        try {
+            \think\facade\Log::$level($message);
+        } catch (\Throwable $e) {
+        }
     }
 
     /**
-     * 获取所有插件目录名称
+     * 有 plugin.php 的插件目录名。同进程只扫一遍。
      *
-     * @param bool $useCache 是否使用缓存
-     * @return array
+     * @return list<string>
      */
-    public static function getAddonNames(bool $useCache = true): array
+    public static function getAddonNames(): array
     {
-        if ($useCache && self::useCache()) {
-            try {
-                $cached = \think\facade\Cache::get(self::CACHE_KEY_ADDONS);
-                if ($cached !== null) {
-                    return $cached;
-                }
-            } catch (\Throwable $e) {
-                // 缓存不可用，使用正常流程
-            }
+        if (self::$names !== null) {
+            return self::$names;
         }
 
-        $addonsPath = addons_path();
         $names = [];
-
-        if (!is_dir($addonsPath)) {
-            return $names;
-        }
-
-        $dirs = glob(rtrim($addonsPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
-        if ($dirs !== false) {
-            foreach ($dirs as $dir) {
-                $names[] = basename($dir);
+        $addonsPath = addons_path();
+        if (is_dir($addonsPath)) {
+            $dirs = glob(rtrim($addonsPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
+            if ($dirs !== false) {
+                foreach ($dirs as $dir) {
+                    if (is_file($dir . DIRECTORY_SEPARATOR . 'plugin.php')) {
+                        $names[] = basename($dir);
+                    }
+                }
             }
         }
 
-        if ($useCache && self::useCache()) {
-            try {
-                \think\facade\Cache::set(self::CACHE_KEY_ADDONS, $names, self::CACHE_TTL);
-            } catch (\Throwable $e) {
-                // 缓存存储失败，继续
-            }
-        }
+        self::$names = $names;
         return $names;
     }
 
-    /**
-     * 获取插件路径
-     *
-     * @param string $name
-     * @return string
-     */
     public static function getAddonPath(string $name): string
     {
         return addons_path($name);
     }
 
-    /**
-     * 检查插件是否存在
-     *
-     * @param string $name
-     * @return bool
-     */
     public static function exists(string $name): bool
     {
         return is_dir(self::getAddonPath($name));
     }
 
-    /**
-     * 获取插件配置文件路径
-     *
-     * @param string $name
-     * @return string
-     */
     public static function getConfigPath(string $name): string
     {
         return self::getAddonPath($name) . DIRECTORY_SEPARATOR . 'plugin.php';
     }
 
-    /**
-     * 检查插件是否有配置文件
-     *
-     * @param string $name
-     * @return bool
-     */
     public static function hasConfig(string $name): bool
     {
         return is_file(self::getConfigPath($name));
     }
 
-    /**
-     * 获取插件配置
-     *
-     * @param string $name
-     * @return array
-     */
     public static function getConfig(string $name): array
     {
-        $cacheKey = self::CACHE_KEY_CONFIG_PREFIX . $name;
-
-        if (self::useCache()) {
-            try {
-                $cached = \think\facade\Cache::get($cacheKey);
-                if ($cached !== null) {
-                    return $cached;
-                }
-            } catch (\Throwable $e) {
-                // 缓存读取失败，使用正常流程
-            }
+        if (array_key_exists($name, self::$configs)) {
+            return self::$configs[$name];
         }
 
-        $configPath = self::getConfigPath($name);
         $config = [];
+        $configPath = self::getConfigPath($name);
         if (is_file($configPath)) {
-            $config = include $configPath;
-            $config = is_array($config) ? $config : [];
+            $loaded = include $configPath;
+            $config = is_array($loaded) ? $loaded : [];
         }
 
-        if (self::useCache()) {
-            try {
-                \think\facade\Cache::set($cacheKey, $config, self::CACHE_TTL);
-            } catch (\Throwable $e) {
-                // 缓存存储失败，继续
-            }
-        }
+        self::$configs[$name] = $config;
         return $config;
     }
 
     /**
-     * 检查插件是否已安装
+     * identifier 等于目录名且 state 为 enable。
      *
-     * @param string $name
-     * @return bool
+     * @return list<string>
      */
-    public static function isInstalled(string $name): bool
+    public static function enabledNames(): array
     {
-        return is_file(self::getAddonPath($name) . DIRECTORY_SEPARATOR . 'install.lock');
+        $out = [];
+        foreach (self::getAddonNames() as $name) {
+            $config = self::getConfig($name);
+            if ($config === []) {
+                continue;
+            }
+            if (($config['identifier'] ?? '') !== $name) {
+                self::log('warning', "插件 {$name} 的 identifier 与目录名不一致，跳过");
+                continue;
+            }
+            if (($config['state'] ?? 'enable') !== 'enable') {
+                continue;
+            }
+            $out[] = $name;
+        }
+        return $out;
     }
 
-    /**
-     * 校验插件 identifier 是否与目录名一致
-     *
-     * @param string $name 插件目录名
-     * @return bool
-     */
     public static function validateIdentifier(string $name): bool
     {
-        $config = self::getConfig($name);
-        $identifier = $config['identifier'] ?? '';
-
-        if (empty($identifier)) {
-            return false;
-        }
-
-        return $identifier === $name;
+        $identifier = self::getConfig($name)['identifier'] ?? '';
+        return $identifier !== '' && $identifier === $name;
     }
 
-    /**
-     * 清除所有插件缓存
-     *
-     * @return void
-     */
+    public static function resetMemory(): void
+    {
+        self::$names = null;
+        self::$configs = [];
+    }
+
     public static function clearCache(): void
     {
-        if (!self::useCache()) {
-            return;
-        }
-
-        try {
-            \think\facade\Cache::delete(self::CACHE_KEY_ADDONS);
-
-            $addons = self::getAddonNames(false);
-            foreach ($addons as $name) {
-                \think\facade\Cache::delete(self::CACHE_KEY_CONFIG_PREFIX . $name);
-            }
-        } catch (\Throwable $e) {
-            // 缓存清除失败，忽略
-        }
+        self::resetMemory();
+        self::dropLegacyManifest();
     }
 
-    /**
-     * 清除单个插件的缓存
-     *
-     * @param string $name
-     * @return void
-     */
     public static function clearPluginCache(string $name): void
     {
-        if (!self::useCache()) {
-            return;
-        }
+        unset(self::$configs[$name]);
+        self::$names = null;
+        self::dropLegacyManifest();
+    }
 
-        try {
-            \think\facade\Cache::delete(self::CACHE_KEY_CONFIG_PREFIX . $name);
-            \think\facade\Cache::delete(self::CACHE_KEY_ADDONS);
-        } catch (\Throwable $e) {
-            // 缓存清除失败，忽略
+    /** 丢掉 2026.1.8 留下的路由清单文件，避免旧缓存继续生效 */
+    private static function dropLegacyManifest(): void
+    {
+        $runtime = function_exists('runtime_path')
+            ? runtime_path()
+            : (sys_get_temp_dir() . DIRECTORY_SEPARATOR);
+        $file = rtrim((string)$runtime, '/\\') . DIRECTORY_SEPARATOR . 'cache' . DIRECTORY_SEPARATOR . 'addons_route_manifest.php';
+        if (is_file($file)) {
+            @unlink($file);
         }
     }
 }

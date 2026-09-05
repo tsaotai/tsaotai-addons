@@ -5,27 +5,22 @@ namespace tsaotai\addons;
 
 class Addons
 {
-    protected array $addons = [];
-    protected Generator $generator;
-
-    public function __construct(Generator $generator)
-    {
-        $this->generator = $generator;
-    }
+    /** @var array<string, array>|null */
+    protected ?array $addons = null;
 
     public function load(): void
     {
-        Loader::load();
+        Loader::boot();
     }
 
     public function registerRoutes(): void
     {
-        Router::register();
+        Loader::boot();
     }
 
     public function getAddons(): array
     {
-        if (empty($this->addons)) {
+        if ($this->addons === null) {
             $this->addons = $this->scanAddons();
         }
         return $this->addons;
@@ -34,53 +29,25 @@ class Addons
     public function scanAddons(): array
     {
         $addons = [];
-        $names = AddonDiscovery::getAddonNames();
-
-        foreach ($names as $name) {
-            $addons[$name] = $this->getAddonInfo($name);
+        foreach (AddonDiscovery::getAddonNames() as $name) {
+            $config = AddonDiscovery::getConfig($name);
+            if ($config === []) {
+                continue;
+            }
+            $addons[$name] = $config;
         }
-
         return $addons;
-    }
-
-    public function create(string $name, array $options = []): bool
-    {
-        $result = $this->generator->create($name, $options);
-        if ($result) {
-            AddonDiscovery::clearCache();
-        }
-        return $result;
     }
 
     public function clearCache(): void
     {
         AddonDiscovery::clearCache();
-        $this->addons = [];
+        $this->addons = null;
     }
 
     public function clearPluginCache(string $name): void
     {
         AddonDiscovery::clearPluginCache($name);
-        $this->addons = [];
-    }
-
-    protected function getAddonInfo(string $name): array
-    {
-        $info = [
-            'name' => $name,
-            'title' => $name,
-            'description' => '',
-            'version' => '2026.1.1',
-            'author' => '',
-            'state' => 'enable',
-            'installed' => AddonDiscovery::isInstalled($name),
-        ];
-
-        if (AddonDiscovery::hasConfig($name)) {
-            $config = AddonDiscovery::getConfig($name);
-            $info = array_merge($info, $config);
-        }
-
-        return $info;
+        $this->addons = null;
     }
 }

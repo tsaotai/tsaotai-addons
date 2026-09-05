@@ -1,8 +1,28 @@
 # 更新日志
 
-本文档记录 TsaoTai Addons 插件系统的所有重要更新。格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/) 规范。
+格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。
 
 ***
+
+## [2026.1.9] - 2026-09-05
+
+### 移除
+
+- 脚手架：`Generator`、`php think addon:make` / `plugin:make` / `make:addon`
+- 默认管理路由 `plugin/:id/[:action]` 与 `PluginGateway`
+- `PluginController`（安装/卸载/`install.lock`、update/rule 页）
+- 空壳 `CommonController`
+- `addons_url()` / `addons_view()`
+- `Router` 与 `runtime/cache/addons_route_manifest.php`（生产环境 1 小时脏清单会 404）
+- Think Cache 对目录/配置的 1 小时缓存
+
+### 优化
+
+- 启动一次遍历：加载约定文件 + `require route.php`
+- 同进程内 `plugin.php` 只读一遍；只认带 `plugin.php` 的目录
+- `clearCache()` 会删掉旧的路由清单文件
+
+---
 
 ## [2026.1.8] - 2026-09-04
 

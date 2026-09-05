@@ -12,6 +12,7 @@
             "homepage": "https://github.com/tsaotai"
         }
     ],
+    "version": "2026.1.9",
     "require": {
         "php": ">=8.0.0",
         "topthink/framework": "^8.0"
